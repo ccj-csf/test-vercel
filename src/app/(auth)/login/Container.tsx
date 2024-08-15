@@ -99,7 +99,7 @@ const Container: FC<LoginProps> = memo((props) => {
     };
     setUserInfo(userData); // 更新用户信息和初始收益数据
     setPlaylist(defaultPlaylist);
-    playTrack(0);
+    // playTrack(0);
   }, [playTrack, setPlaylist, setUserInfo]);
 
   useEffect(() => {
