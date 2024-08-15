@@ -1,0 +1,117 @@
+'use client';
+import { CurrencyIconButton } from '@/biz-components';
+import React, { useRef } from 'react';
+
+interface AudioProgressBarProps {
+  duration: number; // 音频总时长（秒）
+  currentTime: number; // 当前播放时间（秒）
+  onTimeUpdate?: (time: number) => void; // 更新时间的回调函数
+  barColor?: string; // 进度条的颜色
+}
+
+const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
+  duration,
+  currentTime,
+  onTimeUpdate,
+  barColor = '#000',
+}) => {
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const progressBar = progressBarRef.current;
+    if (progressBar) {
+      const rect = progressBar.getBoundingClientRect();
+      const newTime = ((event.clientX - rect.left) / rect.width) * duration;
+      onTimeUpdate?.(newTime);
+    }
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (event.buttons === 1) {
+      handleMouseDown(event);
+    }
+  };
+
+  // 计算奖励节点的位置
+  const rewardNodeOnePosition = (60 / duration) * 100;
+  const rewardNodeTwoPosition = (2 / 3) * 100;
+
+  // 检查是否显示奖励节点
+  const shouldDisplayNodes = duration > 0;
+
+  return (
+    <div className="relative mt-6">
+      <section
+        className="relative h-[2px] w-full cursor-pointer select-none overflow-visible rounded-[22px] bg-gray-200"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        ref={progressBarRef}
+      >
+        <div
+          className="absolute left-0 top-0 h-full rounded-[22px]"
+          style={{
+            width: `${(currentTime / duration) * 100}%`,
+            backgroundColor: barColor,
+          }}
+        ></div>
+
+        {/* 奖励节点1 */}
+        {shouldDisplayNodes && (
+          <div
+            className="absolute text-12"
+            style={{
+              left: `${rewardNodeOnePosition}%`,
+              top: '-2px',
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <div className="relative flex flex-col items-center justify-center">
+              <span className="z-10 block h-[6px] w-[4px] rounded-full bg-black"></span>
+              <div className="absolute top-[12px] flex items-center space-x-1 text-[#898992]">
+                <CurrencyIconButton size={12} />
+                <span>+100</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 奖励节点2 */}
+        {shouldDisplayNodes && (
+          <div
+            className="absolute text-12"
+            style={{
+              left: `${rewardNodeTwoPosition}%`,
+              top: '-2px',
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <div className="relative flex flex-col items-center">
+              <span className="z-10 block h-[6px] w-[4px] rounded-full bg-black"></span>
+              <div className="absolute top-[12px] flex items-center space-x-1 text-[#898992]">
+                <CurrencyIconButton size={12} />
+                <span>+500</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="mt-[6px] flex w-full items-center justify-between text-12 text-[#898992]">
+        <span>
+          {Math.floor(currentTime / 60)}:
+          {Math.floor(currentTime % 60)
+            .toString()
+            .padStart(2, '0')}
+        </span>
+        <span>
+          {Math.floor(duration / 60)}:
+          {Math.floor(duration % 60)
+            .toString()
+            .padStart(2, '0')}
+        </span>
+      </section>
+    </div>
+  );
+};
+
+export default AudioProgressBar;

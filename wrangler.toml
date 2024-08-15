@@ -1,0 +1,67 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "telegram-miniapp-wav"
+compatibility_date = "2024-05-12"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# Automatically place your workloads in an optimal location to minimize latency.
+# If you are running back-end logic in a Pages Function, running it closer to your back-end infrastructure
+# rather than the end user may result in better performance.
+# Docs: https://developers.cloudflare.com/pages/functions/smart-placement/#smart-placement
+[placement]
+mode = "smart"
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wav-app-test"
+database_id = "d1e84eb1-9541-4e52-9675-7d1c72355252"
+
+######## PREVIEW environment config ########
+[env.preview.vars]
+# API_KEY = "xyz789"
+NODE_VERSION = "18.17.0"
+NEXT_PUBLIC_ENV="test"
+NEXT_PUBLIC_BASE_URL="https://sandbox-api.wav.xyz/api/" # api serer url
+# NEXT_PUBLIC_IMG_BASE_URL=https://test.xxx # custom image loader url
+BOT_TOKEN="7421451294:AAEB2uWjJ_vFUijI8sGPERSlS6HtJP0K03M" # telegram bot token
+NEXT_PUBLIC_TG_MINIAPP_TONCONNECT_MANIFEST_URL="https://sandbox-api.wav.xyz/api/tonconnect-manifest-qa.json" # ton connect manifest url
+NEXT_PUBLIC_TG_MINIAPP_URL="https://t.me/test_wav_bot/test_wav" # telegram miniapp url
+NEXT_PUBLIC_API_BASE_URL="https://sandbox-api.wav.xyz/api/"  # api serer url
+NEXT_PUBLIC_API_TG_URL="https://sandbox-api.wav.xyz/api/" # api serer url
+NEXT_PUBLIC_TG_GROUP_URL="https://t.me/wav_test_group" # telegram group url
+
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "wav-app-test"
+database_id = "d1e84eb1-9541-4e52-9675-7d1c72355252"
+
+
+# [[env.preview.kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "<PREVIEW_NAMESPACE_ID>"
+
+######## PRODUCTION environment config ########
+
+[env.production.vars]
+# API_KEY = "abc123"
+NODE_VERSION = "18.17.0"
+NEXT_PUBLIC_ENV="production"
+NEXT_PUBLIC_BASE_URL="https://sandbox-api.wav.xyz/api/" # api serer url
+# NEXT_PUBLIC_IMG_BASE_URL=https://xxx # custom image loader url
+BOT_TOKEN="6994658923:AAGzoxyRTeXMsmJ9X9hXDbaJJ8Xzfw0q6Kk" # telegram bot token
+NEXT_PUBLIC_TG_MINIAPP_TONCONNECT_MANIFEST_URL="https://sandbox-api.wav.xyz/api/tonconnect-manifest.json" # ton connect manifest url
+NEXT_PUBLIC_TG_MINIAPP_URL="https://t.me/CharacterX_bot/miniapp" # telegram miniapp url
+NEXT_PUBLIC_API_BASE_URL="https://sandbox-api.wav.xyz/api/"  # api serer url
+NEXT_PUBLIC_API_TG_URL="https://sandbox-api.wav.xyz/api/" # api serer url
+NEXT_PUBLIC_TG_GROUP_URL="https://t.me/CharacterX_Group" # telegram group url
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "wav-app-prod"
+database_id = "f41775e3-ed4a-4342-8940-4e9e0e15130b"
+
+# [[env.production.kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "<PRODUCTION_NAMESPACE_ID>"

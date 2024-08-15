@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --foreground: #fff;
+  overflow: hidden;
+  --font-grotesk-display: 'Clash Grotesk', sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  color: black;
+  font-family: var(--font-grotesk-grotesk); /* 确保全局字体设置 */
+}
+
+html {
+  /* 处理 ios 热启动出现底部消失问题 */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+main {
+  height: 100%;
+  overflow: scroll;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* padding-bottom: 100px; */
+}
+
+main::-webkit-scrollbar {
+  display: none;
+}
+
+/* 对于支持的所有浏览器，隐藏滚动条 */
+.hide-scrollbars {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* 对于Chrome、Safari和Opera */
+.hide-scrollbars::-webkit-scrollbar {
+  display: none;
+}

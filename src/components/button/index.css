@@ -1,0 +1,26 @@
+.button {
+  border-radius: 8px;
+  font-size: 13px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+}
+.custom-button-gradient {
+  background-image: linear-gradient(to right, #ffa7ff, #feff88 50%, #b5f8a6);
+  height: 56px;
+  color: #202022;
+}
+
+.custom-button-gray {
+  height: 56px;
+  background-color: #f2f5f8;
+  color: #c5c5d0;
+}
+
+.custom-button-black {
+  height: 44px;
+  background-color: #000;
+  border-radius: 8px;
+}
