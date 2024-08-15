@@ -4,7 +4,7 @@ export default async function Page() {
   // const res = await getUserBoostAction();
 
   return (
-    <div className=" h-screen w-full bg-gray-100">
+    <div className="min-h-screen w-full bg-gray-100">
       <Container></Container>
     </div>
   );
