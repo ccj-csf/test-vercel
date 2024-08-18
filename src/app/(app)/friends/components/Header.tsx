@@ -1,4 +1,4 @@
-// Header.tsx
+'use client';
 import { Icon } from '@/components';
 import React from 'react';
 

@@ -1,4 +1,4 @@
-// InviteButton.tsx
+'use client';
 import { Button, Icon } from '@/components'; // 根据项目实际情况调整引入路径
 import React from 'react';
 

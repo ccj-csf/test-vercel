@@ -12,6 +12,7 @@ export interface ISong {
   sourceUrl: string;
   artist: string;
 }
+
 export type IPlayMode = 'loop' | 'shuffle' | 'repeat';
 
 interface MusicPlayerState {
@@ -24,7 +25,7 @@ interface MusicPlayerState {
   currentTime: number;
   duration: number;
   userInitiated: boolean;
-  // currentTrack: () => ISong | undefined;
+  isTrackCompleted: boolean; // 新增状态
   getCurrentTrack: () => ISong | undefined;
   setPlaylist: (tracks: ISong[]) => void;
   playTrack: (index: number) => void;
@@ -51,7 +52,7 @@ export const useMusicPlayerStore = create(
       duration: 0,
       animationFrameId: undefined,
       userInitiated: false,
-      // currentTrack: () => get().playlist[get().currentTrackIndex],
+      isTrackCompleted: false, // 初始化为 false
       getCurrentTrack: () => {
         const { playlist, currentTrackIndex } = get();
         return playlist[currentTrackIndex];
@@ -64,15 +65,13 @@ export const useMusicPlayerStore = create(
 
         if (player instanceof Howl) {
           if (player && currentTrackId !== track.id) {
-            // 如果音源不同，重新加载
-            console.log('如果音源不同，重新加载', track.sourceUrl);
-            player.unload(); // 卸载当前音轨
+            player.unload();
             player = new Howl({
               src: [track.sourceUrl],
               html5: true,
               autoplay: false,
               onplay: () => {
-                set({ isPlaying: true });
+                set({ isPlaying: true, isTrackCompleted: false });
                 startProgressUpdate(player);
               },
               onpause: () => {
@@ -84,26 +83,24 @@ export const useMusicPlayerStore = create(
               },
               onend: () => {
                 if (get().playMode === 'repeat') {
-                  // 单曲循环模式，重播当前曲目
                   player?.play();
                 } else {
-                  // 其他模式，移动到下一曲
                   get().nextTrack();
                 }
                 stopProgressUpdate();
+                set({ isTrackCompleted: true });
               },
             });
           } else {
-            player.stop(); // 如果音源相同，只需停止
+            player.stop();
           }
         } else {
-          // 创建新的 Howl 实例
           player = new Howl({
             src: [track.sourceUrl],
             html5: true,
             autoplay: false,
             onplay: () => {
-              set({ isPlaying: true });
+              set({ isPlaying: true, isTrackCompleted: false });
               startProgressUpdate(player);
             },
             onpause: () => {
@@ -116,6 +113,7 @@ export const useMusicPlayerStore = create(
             onend: () => {
               get().nextTrack();
               stopProgressUpdate();
+              set({ isTrackCompleted: true });
             },
           });
         }
@@ -163,6 +161,7 @@ export const useMusicPlayerStore = create(
 
         playTrack(nextIndex);
         set({ userInitiated });
+        set({ isTrackCompleted: true });
       },
 
       previousTrack: (userInitiated = false) => {
@@ -206,7 +205,10 @@ export const useMusicPlayerStore = create(
                 isPlaying: false,
               });
             },
-            onend: () => get().nextTrack(),
+            onend: () => {
+              get().nextTrack();
+              set({ isTrackCompleted: true });
+            },
           });
 
           set({ player });

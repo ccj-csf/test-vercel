@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 
 const SECONDS_PER_HOUR = 3600;
-const SYNC_INTERVAL_MS = 20 * 1000; // 同步间隔（毫秒）
+const SYNC_INTERVAL_MS = 60 * 1000; // 同步间隔（毫秒）
 
 interface UserInfoState {
   userName: string;
@@ -11,7 +11,8 @@ interface UserInfoState {
   profitPerHour: number;
   coinBalance: number;
   profitPerSecond: number;
-  rewardPoints: number; // 新增字段
+  rewardPoints: number; // 积分
+  invites: number; // 邀请人数
   intervalId: NodeJS.Timeout | null;
   setUserInfo: (info: Partial<UserInfoState>) => void;
   updateProfitPerHour: (increment: number, cost: number) => void;
@@ -27,7 +28,8 @@ export const useUserInfoStore = create<UserInfoState>((set, get) => ({
   profitPerHour: 3600,
   coinBalance: 189809,
   profitPerSecond: 3600 / SECONDS_PER_HOUR,
-  rewardPoints: 5000, // 初始化 rewardPoints
+  rewardPoints: 5000, // 初始化积分
+  invites: 3, // 初始化邀请人数
   intervalId: null,
 
   setUserInfo: (info) => {
@@ -87,18 +89,18 @@ export const useUserInfoStore = create<UserInfoState>((set, get) => ({
     const { coinBalance } = get();
     console.log('🚀 ~ syncCoinBalance: ~ coinBalance:', coinBalance);
 
-    // try {
-    //   // 调用后端API同步 coinBalance，这里用 fetch 作为示例
-    //   await fetch('/api/sync-coin-balance', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ coinBalance }),
-    //   });
-    // } catch (error) {
-    //   console.error('Failed to sync coin balance:', error);
-    // }
+    try {
+      // 调用后端API同步 coinBalance，这里用 fetch 作为示例
+      await fetch('/api/sync-coin-balance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ coinBalance }),
+      });
+    } catch (error) {
+      console.error('Failed to sync coin balance:', error);
+    }
   },
 }));
 
@@ -108,7 +110,7 @@ export const useStartProfitPerSecond = () => {
   useEffect(() => {
     startProfitPerSecond();
 
-    // 设置每 SYNC_INTERVAL_MS 同步一次coinBalance
+    // 设置每 SYNC_INTERVAL_MS 同步一次 coinBalance
     const syncInterval = setInterval(syncCoinBalance, SYNC_INTERVAL_MS);
 
     return () => {

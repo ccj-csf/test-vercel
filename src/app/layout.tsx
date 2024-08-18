@@ -29,7 +29,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         {/* iconfont 链接 */}
         <link rel="stylesheet" href={process.env.NEXT_PUBLIC_ICONFONT_URL} />
-        {/* telegram miniapp sdk */}
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
       </head>
       <body className={clashGrotesk.className}>

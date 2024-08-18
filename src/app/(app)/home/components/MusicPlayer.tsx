@@ -3,7 +3,7 @@
 import { Icon } from '@/components';
 import { useMusicPlayerStore } from '@/store';
 import Image from 'next/image';
-import React from 'react';
+import React, { useCallback } from 'react';
 import AlbumArt from './AlbumArt';
 import AudioProgressBar from './AudioProgressBar';
 
@@ -15,6 +15,14 @@ const MusicPlayer: React.FC = () => {
     const player = useMusicPlayerStore.getState().player as Howl;
     player.seek(time);
     updateCurrentTime(time);
+  };
+  const onSongChange = useCallback(() => {
+    // 在切换歌曲时可以重置奖励状态
+    console.log('Song changed');
+  }, []);
+  const handleNextTrack = () => {
+    nextTrack(true);
+    onSongChange();
   };
   return (
     <div className="mt-6">
@@ -34,12 +42,13 @@ const MusicPlayer: React.FC = () => {
           </section>
         </div>
         <div className="rounded-[100px] bg-white px-[16px] py-2">
-          <Icon name="random-play" className="!text-24" onClick={() => nextTrack(true)} />
+          <Icon name="random-play" className="!text-24" onClick={handleNextTrack} />
         </div>
       </section>
       <AudioProgressBar
         duration={duration}
         currentTime={currentTime}
+        // onSongChange={onSongChange}
         onTimeUpdate={(time) => {
           console.log('New time:', time);
           handleSeek(time);

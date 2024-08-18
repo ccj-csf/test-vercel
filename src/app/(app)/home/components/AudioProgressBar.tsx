@@ -1,6 +1,8 @@
 'use client';
 import { CurrencyIconButton } from '@/biz-components';
-import React, { useRef } from 'react';
+import { useMusicPlayerStore, useUserInfoStore } from '@/store';
+import React, { useEffect, useRef, useState } from 'react';
+import store from 'store2';
 
 interface AudioProgressBarProps {
   duration: number; // 音频总时长（秒）
@@ -15,7 +17,27 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
   onTimeUpdate,
   barColor = '#000',
 }) => {
+  const { isTrackCompleted } = useMusicPlayerStore();
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const { setUserInfo, coinBalance } = useUserInfoStore();
+
+  // 奖励金额
+  const rewardOneAmount = 100;
+  const rewardTwoAmount = 500;
+
+  // 奖励节点的位置
+  const rewardNodeOnePosition = (1 / 3) * duration;
+  const rewardNodeTwoPosition = (2 / 3) * duration;
+
+  // 存储奖励状态的键名
+  const rewardKeyNode1 = `rewardNode1`;
+  const rewardKeyNode2 = `rewardNode2`;
+
+  // 从store2获取初始状态
+  const [rewardsClaimed, setRewardsClaimed] = useState<{ node1: boolean; node2: boolean }>({
+    node1: store.get(rewardKeyNode1) || false,
+    node2: store.get(rewardKeyNode2) || false,
+  });
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const progressBar = progressBarRef.current;
@@ -32,12 +54,35 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
     }
   };
 
-  // 计算奖励节点的位置
-  const rewardNodeOnePosition = (60 / duration) * 100;
-  const rewardNodeTwoPosition = (2 / 3) * 100;
-
   // 检查是否显示奖励节点
   const shouldDisplayNodes = duration > 0;
+
+  // 处理奖励发放
+  useEffect(() => {
+    if (currentTime > 0 && currentTime >= rewardNodeOnePosition && !rewardsClaimed.node1) {
+      alert('You have claimed your 1 reward for today. Please come back tomorrow.');
+      setUserInfo({ coinBalance: coinBalance + rewardOneAmount });
+      setRewardsClaimed((prev) => ({ ...prev, node1: true }));
+      store.set(rewardKeyNode1, true);
+    }
+    if (currentTime > 0 && currentTime >= rewardNodeTwoPosition && !rewardsClaimed.node2) {
+      alert('You have claimed your 2 reward for today. Please come back tomorrow.');
+      setUserInfo({ coinBalance: coinBalance + rewardTwoAmount });
+      setRewardsClaimed((prev) => ({ ...prev, node2: true }));
+      store.set(rewardKeyNode2, true);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  // 重置奖励领取状态
+  useEffect(() => {
+    if (isTrackCompleted) {
+      setRewardsClaimed({ node1: false, node2: false });
+      store.remove(rewardKeyNode1);
+      store.remove(rewardKeyNode2);
+    }
+  }, [isTrackCompleted, rewardKeyNode1, rewardKeyNode2]);
 
   return (
     <div className="relative mt-6">
@@ -60,7 +105,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
           <div
             className="absolute text-12"
             style={{
-              left: `${rewardNodeOnePosition}%`,
+              left: `${(rewardNodeOnePosition / duration) * 100}%`,
               top: '-2px',
               transform: 'translateX(-50%)',
             }}
@@ -69,7 +114,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
               <span className="z-10 block h-[6px] w-[4px] rounded-full bg-black"></span>
               <div className="absolute top-[12px] flex items-center space-x-1 text-[#898992]">
                 <CurrencyIconButton size={12} />
-                <span>+100</span>
+                <span>+{rewardOneAmount}</span>
               </div>
             </div>
           </div>
@@ -80,7 +125,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
           <div
             className="absolute text-12"
             style={{
-              left: `${rewardNodeTwoPosition}%`,
+              left: `${(rewardNodeTwoPosition / duration) * 100}%`,
               top: '-2px',
               transform: 'translateX(-50%)',
             }}
@@ -89,7 +134,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
               <span className="z-10 block h-[6px] w-[4px] rounded-full bg-black"></span>
               <div className="absolute top-[12px] flex items-center space-x-1 text-[#898992]">
                 <CurrencyIconButton size={12} />
-                <span>+500</span>
+                <span>+{rewardTwoAmount}</span>
               </div>
             </div>
           </div>

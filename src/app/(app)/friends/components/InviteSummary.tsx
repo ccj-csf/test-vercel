@@ -1,4 +1,4 @@
-// InviteSummary.tsx
+'use client';
 import { CurrencyIconButton } from '@/biz-components';
 import Image from 'next/image';
 import React from 'react';

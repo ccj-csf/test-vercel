@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'CharacterX',
-  description: 'CharacterX',
+  title: 'wav',
+  description: 'wav',
 };
 
 export const runtime = 'edge';

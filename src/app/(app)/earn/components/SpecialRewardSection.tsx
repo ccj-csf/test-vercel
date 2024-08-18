@@ -1,3 +1,4 @@
+'use client';
 import { CurrencyIconButton, LogoIcon } from '@/biz-components';
 import { ITask } from '@/types';
 import { ChevronRight } from 'lucide-react';

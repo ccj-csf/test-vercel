@@ -1,4 +1,3 @@
-// TaskDetailContent.tsx
 'use client';
 import { CurrencyIconButton } from '@/biz-components';
 import { Button, Icon } from '@/components';

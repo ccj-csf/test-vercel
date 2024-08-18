@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 export const runtime = 'edge';
 
 export const metadata: Metadata = {
-  title: 'CharacterX',
-  description: 'CharacterX',
+  title: 'wav',
+  description: 'wav',
 };
 export default async function RootLayout({
   children,

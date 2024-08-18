@@ -1,59 +1,82 @@
-const { Bot, InlineKeyboard } = require('grammy');
+const { Bot, InlineKeyboard, API_CONSTANTS } = require('grammy');
 
-const bot = new Bot('6637464565:AAGSl2WZ79uCJHAxswlyFE7LtZqnrcM0duA', {
-  // botInfo: {
-  //   first_name: 'dev_chx_bot1',
-  //   username: 'dev_chx_bot1',
-  //   can_join_groups: true,
-  //   can_read_all_group_messages: true,
-  //   supports_inline_queries: false,
-  //   can_connect_to_business: false,
-  // },
-});
-
-// bot.command('start', (ctx) => ctx.reply('Welcome! Up and running.'));
-// // Handle other messages.
-// bot.on('message', (ctx) => ctx.reply('Got another message!888'));
+const bot = new Bot('7370641465:AAEtgSnlRZRWiNiKpuV96ALarkxIcnuCdtc', {});
 
 const LEARN_MORE_URL = 'https://t.me/CharacterX_News';
 const TELEGRAM_URL = 'https://t.me/CharacterX_Group';
 const TWITTER_URL = 'https://twitter.com/CharacterXAI';
 const HOW_TO_PLAY_URL = 'https://miniapp.characterx.ai/how-to-play';
 
-async function start() {
-  // await bot.init();
-  // console.log(bot.botInfo);
-
-  // 设置菜单命令
-  await bot.api.setMyCommands([
-    { command: 'start', description: 'Launch Mini App' },
-    { command: 'twitter', description: 'Follow us on X(Twitter)' },
-    { command: 'community', description: 'Join our community' },
-    { command: 'guide', description: 'How to play' },
-    { command: 'more', description: 'Learn more' },
-  ]);
-
-  const inlineKeyboard = new InlineKeyboard()
-    .webApp('Launch Mini App', 'https://127.0.0.1:3000')
-    .row()
-    .url('X(Twitter)', 'https://twitter.com/CharacterXAI')
-    .url('Community', 'https://t.me/CharacterX_Group')
-    .row()
-    .url('How to play?', 'https://miniapp.characterx.ai/how-to-play')
-    .url('Learn more', 'https://t.me/CharacterX_News');
-
-  bot.command('start', (ctx) =>
-    ctx.replyWithPhoto('https://miniapp.characterx.ai/imgs/chx-miniapp-banner.png', {
-      reply_markup: inlineKeyboard,
-      caption: `CharacterX MiniApp is a streamlined experience designed for Telegram community members, focused on CAI Points earning and simple interactions with AI characters.
-
-⛏️Mine CAI Points: Accumulate CAI Points by enjoying mini games, inviting friends, starting Auto AI Squad Mining, and claiming your SDID for rewards.
-💬Engage with AI Characters: Enjoy engaging chats with various characters on the go. Experience the magic of the AI world.
-
-Experience the essentials of CharacterX in a compact and convenient format with our MiniApp.`,
+const activeUser = (data) => {
+  return fetch('https://sandbox-api.characterx.ai/tg/v1/bot/user', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      data: data,
     }),
-  );
+  });
+};
 
+const successfulPaymentCallback = (data) => {
+  return fetch('https://sandbox-api.characterx.ai/tg/v1/mining/callback', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      data: data,
+    }),
+  });
+};
+
+const botActive = (data) => {
+  return fetch('https://sandbox-api.characterx.ai/tg/v1/bot/active', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      data: data,
+    }),
+  });
+};
+
+async function start() {
+  bot.api.setChatMenuButton({
+    menu_button: {
+      type: 'web_app',
+      text: 'Play-ccj1',
+      web_app: {
+        url: `https://develop.wav-miniapp.pages.dev/login`,
+      },
+    },
+  });
+
+  bot.command('start', (ctx) => {
+    const arr = ctx.message?.text?.split(' ') || [];
+    const startParam = arr.length >= 2 ? arr[1] : '';
+    let url = `https://develop.memeclub-app.pages.dev/create`;
+
+    if (startParam) {
+      url += `?startParam=${startParam}`;
+    }
+
+    const inlineKeyboard = new InlineKeyboard()
+      .webApp('Play--inlie', url)
+      .row()
+      .url('X(Twitter)', 'https://twitter.com/CharacterXAI')
+      .url('Community', 'https://t.me/CharacterX_Group')
+      .row()
+      .url('How to play?', 'https://miniapp.characterx.ai/how-to-play')
+      .url('Airdrop News', 'https://t.me/CharacterX_News');
+
+    return ctx.replyWithPhoto('https://d1skldygiinxua.cloudfront.net/website/20240726-170208.png', {
+      reply_markup: inlineKeyboard,
+      caption: `CharacterX Mini `,
+    });
+  });
   bot.command('twitter', (ctx) => {
     ctx.reply(`Follow us on X(Twitter): ${TWITTER_URL}`);
   });
@@ -65,12 +88,65 @@ Experience the essentials of CharacterX in a compact and convenient format with 
     ctx.reply(`Learn more about CharacterX: ${LEARN_MORE_URL}`);
   });
 
-  // bot.on("message", async (ctx) => {
-  //   const message = ctx.message; // 消息对象
-  //   console.log(ctx, message);
-  // });
+  await bot.api.getUpdates({
+    allowed_updates: API_CONSTANTS.ALL_UPDATE_TYPES,
+    timeout: 10000000,
+  });
 
-  bot.start();
+  bot.on('pre_checkout_query', async (ctx) => {
+    console.log(ctx?.update);
+    const preCheckoutQueryId = ctx?.update?.pre_checkout_query?.id;
+    if (preCheckoutQueryId) {
+      await bot.api.answerPreCheckoutQuery(preCheckoutQueryId, true);
+    }
+  });
+
+  bot.on('channel_post', async (ctx) => {
+    console.log('channel_post');
+    console.log(ctx.update.channel_post);
+  });
+  bot.on('message', async (ctx) => {
+    const message = ctx.message; // 消息对象
+    console.log(message);
+    if (message.successful_payment) {
+      const successfulPayment = message.successful_payment;
+      const data = JSON.parse(successfulPayment?.invoice_payload || '{}');
+      try {
+        const res = await successfulPaymentCallback({
+          order_id: data.order_id,
+          user_id: data.user_id,
+        });
+
+        const resData = await res.json();
+        if (resData.code === 200) {
+          console.log('insert');
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    if (message?.text === 'hi') {
+      botActive({
+        tg_id: message?.from?.id,
+      });
+    }
+
+    try {
+      const res = await activeUser({
+        id: message.from.id,
+        username: message.from.username,
+        first_name: message.from.first_name,
+      });
+      console.log(await res.json());
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+  await bot.start({
+    allowed_updates: API_CONSTANTS.ALL_UPDATE_TYPES,
+  });
 }
 
 start();

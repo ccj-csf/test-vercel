@@ -13,8 +13,7 @@ export function TelegramWebappProvider({ children }: { children: ReactNode }) {
   const initializePlayer = useMusicPlayerStore((state) => state.initializePlayer);
 
   useEffect(() => {
-    // alert('请先登录');
-    initializePlayer(); // 在应用加载后初始化播放器
+    initializePlayer();
   }, [initializePlayer]);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export function TelegramWebappProvider({ children }: { children: ReactNode }) {
       WebApp.setBackgroundColor(BACKGROUND_COLOR);
       WebApp.expand();
       WebApp.disableVerticalSwipes();
-      // WebApp.enableClosingConfirmation();
+      WebApp.enableClosingConfirmation();
     }
   }, []);
 

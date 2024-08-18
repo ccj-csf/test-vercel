@@ -1,6 +1,6 @@
 'use client';
 import { loginAction } from '@/actions';
-import { BACKGROUND_COLOR, PRIMARY_COLOR, ROUTES_HOME } from '@/constants';
+import { ROUTES_HOME } from '@/constants';
 import { useUser } from '@/hooks';
 import { useMusicPlayerStore, useUserInfoStore, useUserStore } from '@/store';
 import { IWebAppInitData } from '@/types';
@@ -103,20 +103,23 @@ const Container: FC<LoginProps> = memo((props) => {
   }, [playTrack, setPlaylist, setUserInfo]);
 
   useEffect(() => {
-    const WebApp = window?.Telegram?.WebApp;
-    if (WebApp) {
-      WebApp.setHeaderColor(PRIMARY_COLOR);
-      WebApp.setBackgroundColor(PRIMARY_COLOR);
-      login();
-      setTimeout(() => {
-        router.push(ROUTES_HOME);
-      }, 2000);
-    }
-    return () => {
-      WebApp.setHeaderColor(BACKGROUND_COLOR);
-      WebApp.setBackgroundColor(BACKGROUND_COLOR);
-    };
-  }, [login, router]);
+    setTimeout(() => {
+      router.push(ROUTES_HOME);
+    }, 2000);
+  }, [router]);
+
+  // useEffect(() => {
+  //   const WebApp = window?.Telegram?.WebApp;
+  //   if (WebApp) {
+  //     WebApp?.setHeaderColor(PRIMARY_COLOR);
+  //     WebApp?.setBackgroundColor(PRIMARY_COLOR);
+  //     login();
+  //   }
+  //   return () => {
+  //     WebApp.setHeaderColor(BACKGROUND_COLOR);
+  //     WebApp.setBackgroundColor(BACKGROUND_COLOR);
+  //   };
+  // }, [login, router]);
 
   return (
     <div className="relative flex h-screen w-full flex-col items-center  bg-login bg-cover bg-no-repeat px-[46px]">

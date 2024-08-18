@@ -1,4 +1,4 @@
-// DailyRewardSection.tsx
+'use client';
 import { CurrencyIconButton } from '@/biz-components';
 import { formatNumberWithCommas } from '@/utils';
 import { ChevronRight } from 'lucide-react';

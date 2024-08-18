@@ -1,3 +1,4 @@
+'use client';
 import { CurrencyDisplay } from '@/biz-components';
 import { Button, Icon } from '@/components';
 import { ICardItem } from '@/types';

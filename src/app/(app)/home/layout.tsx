@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'wav',
@@ -12,5 +13,11 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main>{children}</main>;
+  return (
+    <main>
+      {/* 加载 Telegram Web App SDK 脚本 */}
+      <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+      {children}
+    </main>
+  );
 }

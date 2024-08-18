@@ -22,8 +22,11 @@ const UserInfo: React.FC = () => {
         <Image src={avatarUrl} alt={userName} width={24} height={24} className="rounded-full" />
         <h2 className="text-13">{userName}</h2>
       </section>
-      <section className="grid grid-cols-2 gap-4 text-12" onClick={() => gotoUserLevelPage()}>
-        <div className="space-y-2 rounded-8 bg-white px-2 py-[6px]">
+      <section className="grid grid-cols-2 gap-4 text-12">
+        <section
+          className="space-y-2 rounded-8 bg-white px-2 py-[6px]"
+          onClick={() => gotoUserLevelPage()}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center  space-x-1">
               <UserLevelIcon level={level} showLabel={false} size={20} />
@@ -43,7 +46,7 @@ const UserInfo: React.FC = () => {
               '--track-width': '4px',
             }}
           />
-        </div>
+        </section>
         <section
           className="relative flex h-[44px] rounded-8 bg-white px-2 pl-[52px]"
           onClick={() => gotoMinePage()}

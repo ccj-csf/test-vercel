@@ -1,3 +1,4 @@
+'use client';
 import { Popup } from '@/components';
 import { IEarnPopupType, ITask } from '@/types';
 import React from 'react';
