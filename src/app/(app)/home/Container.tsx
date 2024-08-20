@@ -2,7 +2,7 @@
 
 import { CurrencyIconButton } from '@/biz-components';
 import { Button, Popup } from '@/components';
-import { useUserInfoStore } from '@/store';
+import { useCoinStore, useUserInfoStore } from '@/store';
 import { formatNumberWithCommas, startVibrate } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import store from 'store2';
@@ -12,8 +12,9 @@ import RewardButtons from './components/RewardButtons';
 import UserInfo from './components/UserInfo';
 
 const Container: React.FC = () => {
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const { coinBalance, rewardPoints, setUserInfo } = useUserInfoStore();
+  const { triggerNotification } = useCoinStore();
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   useEffect(() => {
     const hasSeenPopup = store.session.get('hasSeenPopup');
@@ -33,6 +34,7 @@ const Container: React.FC = () => {
       coinBalance: coinBalance + rewardPoints, // 更新 coinBalance
     });
     setIsPopupVisible(false); // 关闭弹窗
+    triggerNotification(true); // 触发通知
   };
 
   return (

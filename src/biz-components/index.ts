@@ -1,3 +1,4 @@
+export * from './coin-notification';
 export * from './currency-display';
 export * from './currency-icon-button';
 export * from './detail-player';
@@ -11,4 +12,3 @@ export * from './telegram';
 export * from './telegram-webapp-provider';
 export * from './tonconnect-provider';
 export * from './user-level-icon';
-export * from './coin-notification';

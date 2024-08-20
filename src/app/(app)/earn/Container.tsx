@@ -1,5 +1,6 @@
 'use client';
 import { getEarnDataAction, updateEarnDataAction } from '@/actions';
+import { useCoinStore } from '@/store';
 import { IDailyReward, IEarnData, IEarnPopupType, ITask } from '@/types';
 import { startVibrate } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
@@ -14,6 +15,7 @@ interface IProps {
 }
 
 const Container: React.FC<IProps> = ({ data }) => {
+  const { triggerNotification } = useCoinStore();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<IEarnPopupType>('taskDetail');
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
@@ -108,6 +110,7 @@ const Container: React.FC<IProps> = ({ data }) => {
 
     setRewardLoading(false);
     handlePopupClose();
+    triggerNotification(true); // 触发通知
     await updateData();
   };
 
