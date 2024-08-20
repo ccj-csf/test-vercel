@@ -26,9 +26,14 @@ export const openOuterLink = (url: string) => {
 export const getInviteCodeLink = () => {
   return getDirectLink(TgUtils.getInviteCode());
 };
-
 export const openInviteCodeLink = () => {
-  openShareLink(getInviteCodeLink());
+  openShareLink(
+    getInviteCodeLink(),
+    `Unlock rewards with me on the WAV Mini App! 🎶
+💰 Get 5,000 WAV Points instantly for you and your friend!
+🎁 Free AI music creation chances to generate your own song.
+Revolutionize your music experience with WAV today. Share and enjoy the rhythm! 🚀`,
+  );
   if (isAndroid) {
     // 安卓下，分享后返回 app 不能继续分享，所以关闭页面
     window?.Telegram?.WebApp.close();

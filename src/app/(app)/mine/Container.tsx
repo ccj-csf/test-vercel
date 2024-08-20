@@ -2,8 +2,9 @@
 import { getMineDataAction } from '@/actions';
 import { CurrencyDisplay } from '@/biz-components';
 import { Button, Popup, Segment } from '@/components';
-import { useUserInfoStore } from '@/store';
+import { useCoinStore, useUserInfoStore } from '@/store';
 import { ICardItem, IMineDataType } from '@/types';
+import { startVibrate } from '@/utils';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import CardItem from './components/CardItem';
@@ -14,6 +15,7 @@ interface IProps {
 }
 
 const Container: React.FC<IProps> = ({ data }) => {
+  const { triggerNotification } = useCoinStore();
   const { coinBalance, updateProfitPerHour, profitPerHour } = useUserInfoStore();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,6 +43,7 @@ const Container: React.FC<IProps> = ({ data }) => {
   };
 
   const handleUpgrade = async () => {
+    startVibrate();
     if (!selectedCard) return;
 
     setLoading(true);
@@ -69,6 +72,7 @@ const Container: React.FC<IProps> = ({ data }) => {
       );
 
       setShowModal(false); // 请求成功后关闭弹窗
+      triggerNotification(true);
     } catch (error) {
       console.error('Upgrade failed', error);
     } finally {
@@ -88,7 +92,10 @@ const Container: React.FC<IProps> = ({ data }) => {
             { id: 'Styles', title: 'Styles', content: renderItems(items) },
           ]}
           activeSegment={activeSegment}
-          onChange={(activeSegment: any) => setActiveSegment(activeSegment)}
+          onChange={(activeSegment: any) => {
+            startVibrate();
+            setActiveSegment(activeSegment);
+          }}
         />
       </section>
       <section>

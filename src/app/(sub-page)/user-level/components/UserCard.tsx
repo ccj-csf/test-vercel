@@ -1,10 +1,12 @@
+import { IUserLevel } from '@/types';
 import React from 'react';
-
-const UserCard: React.FC<{ data: any }> = ({ data }) => (
-  <div className="user-card">
-    <span>{data.username}</span>
-    <span>{data.points}</span>
-    <span>Rank: {data.rank}</span>
+import UserItem from './UserItem';
+interface IUserCardProps {
+  data: IUserLevel;
+}
+const UserCard: React.FC<IUserCardProps> = ({ data }) => (
+  <div className="fixed bottom-0 w-full bg-[#1e1f22] px-5">
+    <UserItem data={data} />
   </div>
 );
 

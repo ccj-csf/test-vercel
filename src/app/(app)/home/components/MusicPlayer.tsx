@@ -2,6 +2,7 @@
 
 import { Icon } from '@/components';
 import { useMusicPlayerStore } from '@/store';
+import { startVibrate } from '@/utils';
 import Image from 'next/image';
 import React, { useCallback } from 'react';
 import AlbumArt from './AlbumArt';
@@ -21,6 +22,7 @@ const MusicPlayer: React.FC = () => {
     console.log('Song changed');
   }, []);
   const handleNextTrack = () => {
+    startVibrate();
     nextTrack(true);
     onSongChange();
   };

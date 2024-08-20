@@ -28,7 +28,7 @@ const config = {
           DEFAULT: '#3478F5',
         },
         green: {
-          DEFAULT: '#B5F8A6',
+          DEFAULT: '#A6FB92',
         },
         gray: {
           100: '#f2f5f8',

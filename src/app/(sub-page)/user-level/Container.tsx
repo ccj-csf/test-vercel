@@ -1,37 +1,28 @@
 'use client';
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import { getUserLevelDataAction } from '@/actions/user-level';
+import { CoinNotification } from '@/biz-components';
+import { useUserInfoStore } from '@/store';
+import { ILevel, ILevelNumber, IUserLevel } from '@/types';
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import Leaderboard from './components/Leaderboard';
 import LevelConditions from './components/LevelConditions';
-import LevelSelector, { ILevelNumber } from './components/LevelSelector';
+import LevelSelector from './components/LevelSelector';
 import UserCard from './components/UserCard';
-
-export interface ILevel {
-  level: ILevelNumber;
-  name: string;
-  points: number;
-  invites: number;
-}
-
-export interface IUser {
-  username: string;
-  points: number;
-  isCurrentUser: boolean;
-  avatarUrl: string;
-}
 
 interface IState {
   currentLevel: number | null;
-  leaderboardData: { [key: number]: IUser[] };
-  userCardData: IUser | null;
+  leaderboardData: { [key: number]: IUserLevel[] };
+  userCardData: IUserLevel | null;
+  loading: boolean;
 }
 
 interface IAction {
-  type: 'SET_CURRENT_LEVEL' | 'SET_LEADERBOARD_DATA' | 'SET_USER_CARD_DATA';
-  level?: number;
-  data?: IUser[] | IUser | null;
+  type: 'SET_CURRENT_LEVEL' | 'SET_LEADERBOARD_DATA' | 'SET_USER_CARD_DATA' | 'SET_LOADING';
+  level?: ILevelNumber;
+  data?: IUserLevel[] | IUserLevel | null;
+  loading?: boolean;
 }
 
-// 等级数据
 const levels: ILevel[] = [
   { level: 1, name: 'Beginner Beat', points: 5000, invites: 1 },
   { level: 2, name: 'Basic Note', points: 30000, invites: 3 },
@@ -45,14 +36,13 @@ const levels: ILevel[] = [
   { level: 10, name: 'Sound Superstar', points: 1000000000, invites: 30 },
 ];
 
-// 初始状态
 const initialState: IState = {
   currentLevel: null,
   leaderboardData: {},
   userCardData: null,
+  loading: false,
 };
 
-// 缓存和状态管理
 const reducer = (state: IState, action: IAction): IState => {
   switch (action.type) {
     case 'SET_CURRENT_LEVEL':
@@ -62,44 +52,57 @@ const reducer = (state: IState, action: IAction): IState => {
         ...state,
         leaderboardData: {
           ...state.leaderboardData,
-          [action.level!]: action.data as IUser[],
+          [action.level!]: action.data as IUserLevel[],
         },
+        loading: false,
       };
     case 'SET_USER_CARD_DATA':
-      return { ...state, userCardData: action.data as IUser };
+      return { ...state, userCardData: action.data as IUserLevel };
+    case 'SET_LOADING':
+      return { ...state, loading: action.loading ?? false };
     default:
       return state;
   }
 };
 
-const Container: React.FC<{ userLevel: number }> = ({ userLevel }) => {
+const Container: React.FC = () => {
+  const { level: userLevel } = useUserInfoStore();
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  // 当前等级索引
   const [currentIndex, setCurrentIndex] = useState(() =>
     levels.findIndex((level) => level.level === userLevel),
   );
 
   const fetchLeaderboardData = useCallback(
-    async (level: number) => {
-      // 如果缓存中有数据，直接使用
-      if (state.leaderboardData[level]) return;
+    async (level: ILevelNumber) => {
+      dispatch({ type: 'SET_LOADING', loading: true });
 
-      // 模拟异步请求
-      const data = await fakeFetchLeaderboard(level);
-      dispatch({ type: 'SET_LEADERBOARD_DATA', level, data });
+      try {
+        if (!state.leaderboardData[level]) {
+          const response = await getUserLevelDataAction(level);
+          if (response.success && response.data) {
+            const data = response.data;
+            dispatch({ type: 'SET_LEADERBOARD_DATA', level, data });
+          } else {
+            console.error('Failed to fetch leaderboard data:', response);
+          }
+        }
 
-      // 如果是当前用户等级，设置用户卡片数据
-      if (level === userLevel) {
-        const userCardData = (data as IUser[]).find((user) => user.isCurrentUser) || null;
-        dispatch({ type: 'SET_USER_CARD_DATA', data: userCardData });
+        if (level === userLevel) {
+          const userCardData =
+            (state.leaderboardData[level] as IUserLevel[]).find((user) => user.isCurrentUser) ||
+            null;
+          dispatch({ type: 'SET_USER_CARD_DATA', data: userCardData });
+        }
+      } catch (error) {
+        console.error('Failed to fetch leaderboard data:', error);
+      } finally {
+        dispatch({ type: 'SET_LOADING', loading: false });
       }
     },
     [state.leaderboardData, userLevel],
   );
 
   useEffect(() => {
-    // 在组件初始化时设置 currentIndex，并加载用户等级的数据
     fetchLeaderboardData(levels[currentIndex].level);
   }, [fetchLeaderboardData, currentIndex]);
 
@@ -118,48 +121,27 @@ const Container: React.FC<{ userLevel: number }> = ({ userLevel }) => {
       fetchLeaderboardData(levels[prevIndex].level);
     }
   };
+  const isCurrentLevel = useMemo(
+    () => userLevel === levels[currentIndex].level,
+    [userLevel, currentIndex],
+  );
 
   return (
-    <div className="level-display">
+    <div className="pt-[30px]">
+      <CoinNotification />
       <LevelSelector
         currentLevel={levels[currentIndex]}
         onPrevLevel={handlePrevLevel}
         onNextLevel={handleNextLevel}
       />
-      <LevelConditions level={levels[currentIndex]} />
-      <Leaderboard data={state.leaderboardData[levels[currentIndex].level]} />
-      {state.userCardData && <UserCard data={state.userCardData} />}
+      <LevelConditions level={levels[currentIndex]} isCurrentLevel={isCurrentLevel} />
+      <Leaderboard
+        data={state.leaderboardData[levels[currentIndex].level]}
+        loading={state.loading}
+      />
+      {isCurrentLevel && state.userCardData && <UserCard data={state.userCardData} />}
     </div>
   );
-};
-
-// 模拟数据请求
-const fakeFetchLeaderboard = (level: number): Promise<IUser[]> => {
-  const usernames = [
-    ['Goloust', 'Neil', 'Wnageb', 'Steve Ater', 'Kim'],
-    ['Alice', 'Bob', 'Charlie', 'Dave', 'Eve'],
-    ['Frank', 'Grace', 'Heidi', 'Ivan', 'Judy'],
-    ['Mallory', 'Niaj', 'Oscar', 'Peggy', 'Quentin'],
-    ['Romeo', 'Sybil', 'Trent', 'Uma', 'Victor'],
-    ['Walter', 'Xena', 'Yves', 'Zara', 'Aria'],
-    ['Blake', 'Caleb', 'Dylan', 'Eli', 'Fiona'],
-    ['Gina', 'Harry', 'Isla', 'Jack', 'Kara'],
-    ['Liam', 'Mia', 'Nina', 'Omar', 'Pia'],
-    ['Quinn', 'Rhea', 'Sara', 'Theo', 'Uma'],
-  ];
-
-  const userData = usernames[level - 1].map((username, index) => ({
-    username,
-    points: Math.floor(Math.random() * 10000), // 随机分数
-    isCurrentUser: index === 0, // 假设第一个用户是当前用户
-    avatarUrl: 'https://d121vty759npai.cloudfront.net/images/648715e6e5df45a7b284d52e487b01f4.jpeg',
-  }));
-
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(userData);
-    }, 1000);
-  });
 };
 
 export default Container;

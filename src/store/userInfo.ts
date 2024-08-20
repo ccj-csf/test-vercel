@@ -87,7 +87,7 @@ export const useUserInfoStore = create<UserInfoState>((set, get) => ({
 
   syncCoinBalance: async () => {
     const { coinBalance } = get();
-    console.log('🚀 ~ syncCoinBalance: ~ coinBalance:', coinBalance);
+    // console.log('🚀 ~ syncCoinBalance: ~ coinBalance:', coinBalance);
 
     try {
       // 调用后端API同步 coinBalance，这里用 fetch 作为示例

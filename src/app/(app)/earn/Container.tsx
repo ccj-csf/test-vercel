@@ -1,6 +1,7 @@
 'use client';
 import { getEarnDataAction, updateEarnDataAction } from '@/actions';
 import { IDailyReward, IEarnData, IEarnPopupType, ITask } from '@/types';
+import { startVibrate } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
 import React, { useCallback, useState } from 'react';
 import DailyRewardSection from './components/DailyRewardSection';
@@ -33,12 +34,14 @@ const Container: React.FC<IProps> = ({ data }) => {
   });
 
   const handleTaskClick = (task: ITask) => {
+    startVibrate();
     setSelectedTask(task);
     setPopupType('taskDetail');
     setIsPopupVisible(true);
   };
 
   const handleRewardClick = () => {
+    startVibrate();
     setPopupType('rewardDetail');
     setIsPopupVisible(true);
   };
@@ -71,6 +74,7 @@ const Container: React.FC<IProps> = ({ data }) => {
 
   const handleTaskComplete = () => {
     if (selectedTask) {
+      startVibrate();
       const updatedTask = { ...selectedTask, status: 'inProgress' as const };
       handleTaskUpdate(updatedTask, setCompleteLoading);
     }
@@ -78,12 +82,14 @@ const Container: React.FC<IProps> = ({ data }) => {
 
   const handleTaskCheck = () => {
     if (selectedTask) {
+      startVibrate();
       const updatedTask = { ...selectedTask, status: 'completed' as const };
       handleTaskUpdate(updatedTask, setCheckLoading);
     }
   };
 
   const handleDailyRewardClaim = async (newStreak: number, currentUTCDate: string) => {
+    startVibrate();
     setRewardLoading(true);
     const todayReward = dailyRewards?.rewardDays[newStreak - 1] || 0;
 

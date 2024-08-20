@@ -37,6 +37,7 @@ const Container: React.FC<IProps> = ({ data }) => {
   };
 
   const handleInvite = () => {
+    startVibrate();
     openInviteCodeLink();
   };
 

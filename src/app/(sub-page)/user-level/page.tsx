@@ -4,9 +4,9 @@ export default async function Page() {
   // const res = await getReferralListAction();
 
   return (
-    <div className="w-full px-4">
+    <div className="min-h-screen w-full bg-[#07070b]">
       <BackButton />
-      <Container userLevel={1}></Container>
+      <Container></Container>
     </div>
   );
 }

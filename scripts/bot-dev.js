@@ -47,9 +47,9 @@ async function start() {
   bot.api.setChatMenuButton({
     menu_button: {
       type: 'web_app',
-      text: 'Play-ccj1',
+      text: 'Play-vercel',
       web_app: {
-        url: `https://develop.wav-miniapp.pages.dev/login`,
+        url: `https://test-vercel-one-blush.vercel.app/login`,
       },
     },
   });
@@ -57,14 +57,14 @@ async function start() {
   bot.command('start', (ctx) => {
     const arr = ctx.message?.text?.split(' ') || [];
     const startParam = arr.length >= 2 ? arr[1] : '';
-    let url = `https://develop.memeclub-app.pages.dev/create`;
+    let url = `https://develop.wav-miniapp.pages.dev/login`;
 
     if (startParam) {
       url += `?startParam=${startParam}`;
     }
 
     const inlineKeyboard = new InlineKeyboard()
-      .webApp('Play--inlie', url)
+      .webApp('Play', url)
       .row()
       .url('X(Twitter)', 'https://twitter.com/CharacterXAI')
       .url('Community', 'https://t.me/CharacterX_Group')

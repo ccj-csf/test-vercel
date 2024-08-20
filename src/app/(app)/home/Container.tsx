@@ -3,7 +3,7 @@
 import { CurrencyIconButton } from '@/biz-components';
 import { Button, Popup } from '@/components';
 import { useUserInfoStore } from '@/store';
-import { formatNumberWithCommas } from '@/utils';
+import { formatNumberWithCommas, startVibrate } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import store from 'store2';
 import CoinBalance from './components/CoinBalance';
@@ -28,6 +28,7 @@ const Container: React.FC = () => {
   };
 
   const getCoinBalance = () => {
+    startVibrate();
     setUserInfo({
       coinBalance: coinBalance + rewardPoints, // 更新 coinBalance
     });

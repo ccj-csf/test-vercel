@@ -33,3 +33,4 @@ export const API_USER_INFO = '/api/v1/user/info';
 export const API_EARN = '/api/test/earn';
 export const API_MINE = '/api/test/mine';
 export const API_FRIENDS = '/api/test/friends';
+export const API_USER_LEVEL = '/api/test/user-level';
