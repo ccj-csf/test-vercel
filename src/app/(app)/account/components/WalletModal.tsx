@@ -29,12 +29,16 @@ const WalletModal: React.FC<IWalletModalProps> = ({
   };
 
   const disconnect = () => {
-    setIsConfirmVisible(true);
+    // setIsConfirmVisible(true);
+    window.Telegram.WebApp.showConfirm('Disconnect wallet', () => {
+      // console.log('111', 111);
+      handleConfirmDisconnect();
+    });
   };
 
   const handleConfirmDisconnect = () => {
     tonConnectUI.disconnect();
-    setIsConfirmVisible(false);
+    // setIsConfirmVisible(false);
     onClose(); // Close the modal after disconnecting
   };
 
@@ -47,7 +51,6 @@ const WalletModal: React.FC<IWalletModalProps> = ({
 
   return (
     <>
-
       <Popup visible={visible} showCloseButton={true} onClose={onClose} className="!z-10">
         <main className="flex flex-col items-center pt-4">
           <Image src="/icons/ton.svg" width={64} height={64} alt="ton" />
@@ -77,38 +80,35 @@ const WalletModal: React.FC<IWalletModalProps> = ({
           )}
         </main>
       </Popup>
-            {/* 二次确认弹窗 */}
-            <div   className="!z-[20000]">
-
-<Modal
-  visible={isConfirmVisible}
-  showCloseButton={true}
-  onClose={() => setIsConfirmVisible(false)}
-  className="!z-[20000]"
-  key={Math.random()}
->
-  <main className="flex flex-col items-center p-4 px-0">
-    <h2 className="text-xl">Confirm Disconnect</h2>
-    <p className="my-4 text-center ">Are you sure you want to disconnect your wallet?</p>
-    <div className="mt-6 grid grid-cols-2 gap-4">
-      <Button
-        variant="black"
-        className="!h-[50px] !rounded-12 !bg-white !text-15 !text-black"
-        onClick={() => setIsConfirmVisible(false)}
+      {/* 二次确认弹窗 */}
+      <Modal
+        visible={isConfirmVisible}
+        showCloseButton={true}
+        onClose={() => setIsConfirmVisible(false)}
+        className="!z-[20000]"
+        key={Math.random()}
       >
-        Cancel
-      </Button>
-      <Button
-        variant="black"
-        className="!h-[50px] !rounded-12 !bg-black !text-15 !text-white"
-        onClick={handleConfirmDisconnect}
-      >
-        Disconnect
-      </Button>
-    </div>
-  </main>
-</Modal>
-</div>
+        <main className="flex flex-col items-center p-4 px-0">
+          <h2 className="text-xl">Confirm Disconnect</h2>
+          <p className="my-4 text-center ">Are you sure you want to disconnect your wallet?</p>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <Button
+              variant="black"
+              className="!h-[50px] !rounded-12 !bg-white !text-15 !text-black"
+              onClick={() => setIsConfirmVisible(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="black"
+              className="!h-[50px] !rounded-12 !bg-black !text-15 !text-white"
+              onClick={handleConfirmDisconnect}
+            >
+              Disconnect
+            </Button>
+          </div>
+        </main>
+      </Modal>
     </>
   );
 };
