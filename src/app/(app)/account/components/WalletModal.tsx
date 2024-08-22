@@ -47,7 +47,7 @@ const WalletModal: React.FC<IWalletModalProps> = ({
 
   return (
     <>
-      <Popup visible={visible} showCloseButton={true} onClose={onClose} className="!z-10">
+      <Popup visible={visible} showCloseButton={true} onClose={onClose} >
         <main className="flex flex-col items-center pt-4">
           <Image src="/icons/ton.svg" width={64} height={64} alt="ton" />
           <h2 className="mb-2 mt-6 text-21">Your TON wallet is connected</h2>
@@ -82,7 +82,8 @@ const WalletModal: React.FC<IWalletModalProps> = ({
         visible={isConfirmVisible}
         showCloseButton={true}
         onClose={() => setIsConfirmVisible(false)}
-        className="!z-100"
+        // className="!z-100"
+        // tabIndex={-100}
       >
         <main className="flex flex-col items-center p-4 px-0">
           <h2 className="text-xl">Confirm Disconnect</h2>
