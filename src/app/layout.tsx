@@ -1,6 +1,11 @@
 import '@/app/flexiable.css';
 import '@/app/globals.css';
-import { CoinNotification, HeartbeatMonitor, TelegramWebappProvider } from '@/biz-components';
+import {
+  CoinNotification,
+  HeartbeatMonitor,
+  TelegramWebappProvider,
+  TonconnectProvider,
+} from '@/biz-components';
 import { LoadingProvider } from '@/components';
 import { CircleAlert, CircleCheck } from 'lucide-react';
 import { Toaster } from 'sonner';
@@ -36,7 +41,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <NextIntlClientProvider messages={messages}>
             <HeartbeatMonitor />
             <CoinNotification />
-            <TelegramWebappProvider>{children}</TelegramWebappProvider>
+            <TonconnectProvider>
+              <TelegramWebappProvider>{children}</TelegramWebappProvider>
+            </TonconnectProvider>
           </NextIntlClientProvider>
         </LoadingProvider>
         <Toaster
