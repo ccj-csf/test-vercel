@@ -47,7 +47,35 @@ const WalletModal: React.FC<IWalletModalProps> = ({
 
   return (
     <>
-      <Popup visible={visible} showCloseButton={true} onClose={onClose} >
+      {/* 二次确认弹窗 */}
+      <Modal
+        visible={isConfirmVisible}
+        showCloseButton={true}
+        onClose={() => setIsConfirmVisible(false)}
+        className="!z-[200]"
+      >
+        <main className="flex flex-col items-center p-4 px-0">
+          <h2 className="text-xl">Confirm Disconnect</h2>
+          <p className="my-4 text-center ">Are you sure you want to disconnect your wallet?</p>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <Button
+              variant="black"
+              className="!h-[50px] !rounded-12 !bg-white !text-15 !text-black"
+              onClick={() => setIsConfirmVisible(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="black"
+              className="!h-[50px] !rounded-12 !bg-black !text-15 !text-white"
+              onClick={handleConfirmDisconnect}
+            >
+              Disconnect
+            </Button>
+          </div>
+        </main>
+      </Modal>
+      <Popup visible={visible} showCloseButton={true} onClose={onClose} className="!z-10">
         <main className="flex flex-col items-center pt-4">
           <Image src="/icons/ton.svg" width={64} height={64} alt="ton" />
           <h2 className="mb-2 mt-6 text-21">Your TON wallet is connected</h2>
@@ -76,36 +104,6 @@ const WalletModal: React.FC<IWalletModalProps> = ({
           )}
         </main>
       </Popup>
-
-      {/* 二次确认弹窗 */}
-      <Modal
-        visible={isConfirmVisible}
-        showCloseButton={true}
-        onClose={() => setIsConfirmVisible(false)}
-        // className="!z-100"
-        // tabIndex={-100}
-      >
-        <main className="flex flex-col items-center p-4 px-0">
-          <h2 className="text-xl">Confirm Disconnect</h2>
-          <p className="my-4 text-center ">Are you sure you want to disconnect your wallet?</p>
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            <Button
-              variant="black"
-              className="!h-[50px] !rounded-12 !bg-white !text-15 !text-black"
-              onClick={() => setIsConfirmVisible(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="black"
-              className="!h-[50px] !rounded-12 !bg-black !text-15 !text-white"
-              onClick={handleConfirmDisconnect}
-            >
-              Disconnect
-            </Button>
-          </div>
-        </main>
-      </Modal>
     </>
   );
 };
