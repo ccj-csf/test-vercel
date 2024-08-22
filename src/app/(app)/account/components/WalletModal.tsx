@@ -82,7 +82,7 @@ const WalletModal: React.FC<IWalletModalProps> = ({
         visible={isConfirmVisible}
         showCloseButton={true}
         onClose={() => setIsConfirmVisible(false)}
-        className="!z-[20]"
+        className="!z-100"
       >
         <main className="flex flex-col items-center p-4 px-0">
           <h2 className="text-xl">Confirm Disconnect</h2>
