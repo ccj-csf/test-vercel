@@ -49,7 +49,7 @@ const UserInfo: React.FC = () => {
         </section>
         <section
           className="relative flex h-[44px] rounded-8 bg-white px-2 pl-[52px]"
-          onClick={() => gotoMinePage()}
+          // onClick={() => gotoMinePage()}
         >
           <Image
             src="/icons/music-disc.svg"

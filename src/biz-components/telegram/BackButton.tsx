@@ -1,4 +1,5 @@
 'use client';
+import { startVibrate } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
 import { useRouter } from 'next/navigation';
 import { FC, memo, useEffect } from 'react';
@@ -11,6 +12,7 @@ const BackButton: FC<BackButtonProps> = memo((props) => {
   const router = useRouter();
   const handleClick = useMemoizedFn(() => {
     if (onClick) {
+      startVibrate();
       onClick();
       return;
     }
