@@ -1,14 +1,31 @@
 export type ITaskStatus = 'pending' | 'inProgress' | 'completed';
+export type ITaskType =
+  | 'downloadApp'
+  | 'joinTelegram'
+  | 'followOnX'
+  | 'subscribeYouTube'
+  | 'inviteFriends'
+  | 'dailyReward';
+
+// 定义每种任务类型的相关信息
+export interface ITaskConfig {
+  actionText: string;
+  checkActionText?: string;
+  link?: string;
+  iconPath: string;
+  action?: () => void;
+}
+
 export interface ITask {
   id: string;
   title: string;
   description: string;
-  completed: boolean;
-  icon: string;
+  icon?: string;
   reward: number;
-  actionText: string;
-  checkActionText: string;
-  completeActionText: string;
+  actionText?: string;
+  checkActionText?: string;
+  completeActionText?: string;
+  type: ITaskType;
   status: ITaskStatus;
 }
 export type IEarnPopupType = 'taskDetail' | 'rewardDetail';
@@ -21,9 +38,10 @@ export interface IDailyReward {
 }
 
 export interface IEarnData {
-  dailyReward: IDailyReward;
+  dailyRewards: ITask[];
   specialTasks: ITask[];
   tasks: ITask[];
+  dailySigns: IDailySignData[];
 }
 
 export interface UpdateDailyRewardData {
@@ -43,6 +61,13 @@ export interface UpdateSpecialTaskData {
 }
 
 export type IEarnDataType = 'dailyReward' | 'specialTasks' | 'tasks';
+
+export interface IDailySignData {
+  date: string; // 日期（精确到天）
+  timeStamp: number; // 时间戳 (UTC 时间)
+  points: number; // 奖励积分
+  signed: boolean; // 是否已签到
+}
 
 type UpdatePayloadMap = {
   dailyReward: Partial<IDailyReward>;

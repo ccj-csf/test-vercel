@@ -1,10 +1,11 @@
 'use client';
 import { CurrencyIconButton } from '@/biz-components';
 import { Button, Icon } from '@/components';
+import { TASK_CONFIG_MAP } from '@/constants';
 import { ITask } from '@/types';
 import { formatNumberWithCommas } from '@/utils';
+import Image from 'next/image';
 import React from 'react';
-
 interface TaskDetailContentProps {
   task: ITask;
   onComplete: () => void;
@@ -20,13 +21,32 @@ const TaskDetailContent: React.FC<TaskDetailContentProps> = ({
   checkLoading,
   onCheck = () => {},
 }) => {
+  const taskConfig = TASK_CONFIG_MAP[task.type];
   const isCompleted = task.status === 'completed';
   const isInProgress = task.status === 'inProgress';
+  const renderTaskIcon = () => {
+    if (task.type === 'downloadApp') {
+      return (
+        <div className="mt-4 flex justify-center">
+          <Image
+            src={TASK_CONFIG_MAP[task.type]?.iconPath || ''}
+            width={64}
+            height={64}
+            alt="task icon"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className="inline-block items-center justify-center rounded-full bg-icon-gradient p-4">
+          <Icon name={taskConfig.iconPath} className="mt-8 !text-28" />
+        </div>
+      );
+    }
+  };
   return (
     <div className="text-center">
-      <div className=" inline-block  items-center justify-center  rounded-full bg-icon-gradient p-4">
-        <Icon name={task.icon} className="mt-8 !text-28" />
-      </div>
+      {renderTaskIcon()}
       <h2 className="mt-6 text-21">{task.title}</h2>
       {task.description && <p className="mb-2 ">{task.description}</p>}
       <p className="flex justify-center space-x-1 text-15 ">
@@ -40,7 +60,7 @@ const TaskDetailContent: React.FC<TaskDetailContentProps> = ({
         block
         loading={checkLoading}
       >
-        {task.checkActionText}
+        {taskConfig.checkActionText}
       </Button>
       <Button
         onClick={onComplete}
@@ -50,7 +70,7 @@ const TaskDetailContent: React.FC<TaskDetailContentProps> = ({
         loading={completeLoading}
         block
       >
-        {isCompleted ? task.actionText : task.completeActionText}
+        {taskConfig.actionText}
       </Button>
     </div>
   );

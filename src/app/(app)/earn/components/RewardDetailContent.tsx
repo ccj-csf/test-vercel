@@ -1,6 +1,8 @@
 'use client';
+
 import { CurrencyIconButton } from '@/biz-components';
 import { Button } from '@/components';
+import { IDailySignData } from '@/types';
 import { formatNumberToK } from '@/utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -10,20 +12,16 @@ import React, { useEffect, useState } from 'react';
 dayjs.extend(utc);
 
 interface RewardDetailContentProps {
-  rewardDays?: number[]; // 每天的奖励金额数组
-  onClaim?: (newDays: number, newLastClaimDate: string) => void;
+  dailySigns: IDailySignData[];
+  onClaim?: () => void;
   onClose?: () => void;
-  lastClaimDate?: string | null; // 上次领取奖励的UTC时间
-  currentStreak?: number; // 当前连续签到天数
   loading?: boolean;
 }
 
 const RewardDetailContent: React.FC<RewardDetailContentProps> = ({
-  rewardDays = [], // 默认奖励天数
+  dailySigns = [], // 默认数据
   onClaim = () => {}, // 默认处理函数
   onClose = () => {}, // 默认处理函数
-  lastClaimDate = null,
-  currentStreak = 0, // 默认从0天开始
   loading,
 }) => {
   const [canClaim, setCanClaim] = useState(false);
@@ -33,43 +31,27 @@ const RewardDetailContent: React.FC<RewardDetailContentProps> = ({
     const currentUTCDate = dayjs().utc();
     console.log('🚀 ~ useEffect ~ currentUTCDate:', currentUTCDate.format('YYYY-MM-DD HH:mm:ss'));
 
-    if (!lastClaimDate) {
-      // 从未领取过奖励，可以领取
+    const todaySign = dailySigns.find((sign) => {
+      const signDate = dayjs.utc(sign.timeStamp);
+      return signDate.isSame(currentUTCDate, 'day');
+    });
+
+    if (todaySign && !todaySign.signed) {
+      // 今天还没有签到
       setCanClaim(true);
-      setTodayReward(rewardDays[0]); // 设置今天的奖励
+      setTodayReward(todaySign.points);
+    } else if (todaySign && todaySign.signed) {
+      // 今天已经签到过
+      setCanClaim(false);
     } else {
-      const lastDate = dayjs(lastClaimDate).utc();
-      const timeDifference = currentUTCDate.diff(lastDate); // 以毫秒为单位进行对比
-      console.log('🚀 ~ useEffect ~ timeDifference (ms):', timeDifference);
-
-      const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-      const twoDaysInMilliseconds = 2 * oneDayInMilliseconds;
-
-      if (timeDifference < oneDayInMilliseconds) {
-        // 不允许再次签到
-        setCanClaim(false);
-        console.log('🚀 ~ 今天已经签到过');
-      } else if (timeDifference >= oneDayInMilliseconds && timeDifference < twoDaysInMilliseconds) {
-        // 连续签到
-        console.log('🚀 ~ 连续签到的下一天');
-        setCanClaim(true);
-        setTodayReward(rewardDays[currentStreak % rewardDays.length]); // 设置今天的奖励
-      } else {
-        console.log('🚀 ~ 签到中断，重置为第一天');
-        // 超过48小时，中断签到，重置为第一天
-        setCanClaim(true);
-        setTodayReward(rewardDays[0]); // 设置今天的奖励为第一天的奖励
-      }
+      // 如果没有找到今天的记录（理论上不会发生）
+      setCanClaim(false);
     }
-  }, [lastClaimDate, currentStreak, rewardDays]);
+  }, [dailySigns]);
 
   const handleClaimClick = () => {
     if (canClaim) {
-      const newStreak = todayReward === rewardDays[0] ? 1 : (currentStreak % rewardDays.length) + 1;
-      console.log('🚀 ~ handleClaimClick ~ todayReward:', todayReward);
-      const currentUTCDate = dayjs().utc().toISOString();
-      onClaim(newStreak, currentUTCDate); // 调用onClaim时传递新天数和当前UTC时间
-      console.log('🚀 ~ handleClaimClick ~ newStreak:', newStreak);
+      onClaim(); // 调用 onClaim，外部处理逻辑
     } else {
       alert('You have already claimed your reward for today. Please come back tomorrow.');
     }
@@ -87,10 +69,10 @@ const RewardDetailContent: React.FC<RewardDetailContentProps> = ({
       <h2 className="mb-2 mt-3 text-21 font-medium">Daily Reward</h2>
       <p className="text-gray-600">Get WAV Points for daily login without skipping.</p>
       <div className="mb-6 mt-[42px] grid grid-cols-4 gap-[6px] text-15">
-        {rewardDays.map((reward, index) => {
-          const isPast = index < currentStreak;
-          const isCurrent = index === currentStreak % rewardDays.length;
-          const isFuture = index > currentStreak;
+        {dailySigns.map((sign, index) => {
+          const isPast = sign.signed;
+          const isCurrent = dayjs.utc(sign.timeStamp).isSame(dayjs().utc(), 'day');
+          const isFuture = dayjs.utc(sign.timeStamp).isAfter(dayjs().utc(), 'day');
 
           return (
             <div
@@ -106,7 +88,7 @@ const RewardDetailContent: React.FC<RewardDetailContentProps> = ({
                 <CurrencyIconButton size={20} />
               )}
               <p className={`font-medium ${isCurrent ? 'text-black' : 'text-[#898992]'}`}>
-                {formatNumberToK(reward)}
+                {formatNumberToK(sign.points)}
               </p>
               {isFuture && (
                 <div className="absolute inset-0 rounded-8 bg-white opacity-50"></div> // 添加禁用蒙层

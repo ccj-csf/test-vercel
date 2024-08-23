@@ -1,3 +1,5 @@
+import { ITaskConfig, ITaskType } from '@/types';
+
 export const DEFAULT_LOCALE = 'en';
 
 export const QUERY_SHARE = 'share_id_';
@@ -30,3 +32,40 @@ export const DEFAULT_BOOSTING_TIME = 2;
 export const DEFAULT_PERCENT = '0.00';
 
 export const EMPTY_TIPS = 'Oops! There is no content yet:(';
+
+export const TASK_CONFIG_MAP: Record<ITaskType, ITaskConfig> = {
+  downloadApp: {
+    actionText: 'Download the App',
+    checkActionText: 'Check',
+    link: '/download-app',
+    iconPath: '/icons/logo.svg',
+  },
+  joinTelegram: {
+    actionText: 'Join Group',
+    checkActionText: 'Check',
+    link: 'https://t.me/joinchat/XXXXX',
+    iconPath: 'telegram',
+  },
+  followOnX: {
+    actionText: 'Follow',
+    checkActionText: 'Check',
+    link: 'https://x.com/yourprofile',
+    iconPath: 'x',
+  },
+  subscribeYouTube: {
+    actionText: 'Subscribe',
+    checkActionText: 'Check',
+    link: 'https://youtube.com/yourchannel',
+    iconPath: 'youtube',
+  },
+  inviteFriends: {
+    actionText: 'Invite',
+    checkActionText: 'Check',
+    link: '/invite-friends',
+    iconPath: 'friends-plus',
+  },
+  dailyReward: {
+    actionText: 'Claim',
+    iconPath: 'calendar',
+  },
+};

@@ -1,7 +1,8 @@
 import {
-  dailyReward as initialDailyReward,
+  dailyRewards,
   specialTasks as initialSpecialTasks,
   tasks as initialTasks,
+  mockDailySigns,
 } from '@/app/(app)/earn/data';
 import { ResponseWrapper } from '@/lib';
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,16 +10,17 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'edge';
 
 // 全局状态
-let currentDailyReward = { ...initialDailyReward };
+let currentDailyReward = { ...dailyRewards };
 let currentSpecialTasks = [...initialSpecialTasks];
 let currentTasks = [...initialTasks];
 
 export async function GET(request: NextRequest) {
   // 构造返回的数据
   const data = {
-    dailyReward: currentDailyReward,
+    dailyRewards: dailyRewards,
     specialTasks: currentSpecialTasks,
     tasks: currentTasks,
+    dailySigns: mockDailySigns,
   };
 
   // 返回数据作为 JSON 响应
@@ -43,12 +45,6 @@ export async function POST(request: NextRequest) {
     if (type === 'dailyReward') {
       const { currentStreak, newLastClaimDate, totalRewards } = data;
       const newStreak = currentStreak < 10 ? currentStreak + 1 : 1;
-      currentDailyReward = {
-        currentStreak: newStreak,
-        lastClaimDate: newLastClaimDate,
-        rewardDays: currentDailyReward.rewardDays,
-        totalRewards,
-      };
     } else if (type === 'specialTasks') {
       const { id, updates } = data;
       currentSpecialTasks = currentSpecialTasks.map((task) =>

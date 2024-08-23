@@ -1,6 +1,7 @@
 'use client';
 import { CurrencyIconButton } from '@/biz-components';
 import { Icon } from '@/components';
+import { TASK_CONFIG_MAP } from '@/constants';
 import { ITask } from '@/types';
 import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
@@ -23,7 +24,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskClick }) => {
             className={`flex cursor-pointer space-x-3 rounded`}
           >
             <div className="flex h-[50px] w-[50px] items-center justify-center rounded-8 bg-gray-100 p-2">
-              <Icon name={task.icon} className="!text-32" />
+              <Icon name={TASK_CONFIG_MAP[task.type].iconPath} className="!text-32" />
             </div>
             <div className="flex flex-1 items-center justify-between">
               <div className="flex flex-col justify-between space-y-1">

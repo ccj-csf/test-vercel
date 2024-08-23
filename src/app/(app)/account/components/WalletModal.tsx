@@ -1,10 +1,10 @@
 'use client';
 
-import { Button, Icon, Modal, Popup } from '@/components';
+import { Button, Icon, Popup } from '@/components';
 import { useMessage } from '@/hooks';
 import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface IWalletModalProps {
   visible: boolean;
@@ -22,24 +22,22 @@ const WalletModal: React.FC<IWalletModalProps> = ({
   const [tonConnectUI] = useTonConnectUI();
   const { open } = useTonConnectModal();
   const { showSuccess } = useMessage();
-  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
 
   const handleWalletConnect = () => {
     open();
   };
 
   const disconnect = () => {
-    // setIsConfirmVisible(true);
-    window.Telegram.WebApp.showConfirm('Disconnect wallet', () => {
-      // console.log('111', 111);
-      handleConfirmDisconnect();
+    window.Telegram.WebApp.showConfirm('Confirm Disconnect?', (ok: boolean) => {
+      if (ok) {
+        handleConfirmDisconnect();
+      }
     });
   };
 
   const handleConfirmDisconnect = () => {
     tonConnectUI.disconnect();
-    // setIsConfirmVisible(false);
-    onClose(); // Close the modal after disconnecting
+    onClose();
   };
 
   const onCopyLink = () => {
@@ -80,35 +78,6 @@ const WalletModal: React.FC<IWalletModalProps> = ({
           )}
         </main>
       </Popup>
-      {/* 二次确认弹窗 */}
-      <Modal
-        visible={isConfirmVisible}
-        showCloseButton={true}
-        onClose={() => setIsConfirmVisible(false)}
-        className="!z-[20000]"
-        key={Math.random()}
-      >
-        <main className="flex flex-col items-center p-4 px-0">
-          <h2 className="text-xl">Confirm Disconnect</h2>
-          <p className="my-4 text-center ">Are you sure you want to disconnect your wallet?</p>
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            <Button
-              variant="black"
-              className="!h-[50px] !rounded-12 !bg-white !text-15 !text-black"
-              onClick={() => setIsConfirmVisible(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="black"
-              className="!h-[50px] !rounded-12 !bg-black !text-15 !text-white"
-              onClick={handleConfirmDisconnect}
-            >
-              Disconnect
-            </Button>
-          </div>
-        </main>
-      </Modal>
     </>
   );
 };

@@ -137,7 +137,7 @@ const Container: React.FC<IProps> = ({ data }) => {
   function renderItems(items: ICardItem[]) {
     return (
       <div className="grid grid-cols-2 gap-[10px] text-black">
-        {items.map((item) => (
+        {items?.map((item) => (
           <div className="col-span-1" key={item.id} onClick={() => openModal(item)}>
             <CardItem
               cardData={item}

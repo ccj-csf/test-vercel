@@ -41,7 +41,7 @@ const CardItem: React.FC<CardItemProps> = ({
       </section>
       <section className="flex items-center space-x-2">
         <div className="relative h-12 w-12 overflow-hidden rounded-4 bg-gray-100 p-2">
-          <Image src={icon} alt="icon" width={32} height={32} objectFit="cover" />
+          <Image src={icon} alt="icon" width={32} height={32} className="object-cover" />
           {isLocked && (
             <>
               <div className="absolute inset-0 bg-gray-100 opacity-50" />

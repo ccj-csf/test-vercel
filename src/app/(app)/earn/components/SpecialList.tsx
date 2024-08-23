@@ -1,5 +1,6 @@
 'use client';
-import { CurrencyIconButton, LogoIcon } from '@/biz-components';
+import { CurrencyIconButton } from '@/biz-components';
+import { TASK_CONFIG_MAP } from '@/constants';
 import { ITask } from '@/types';
 import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
@@ -26,7 +27,12 @@ const SpecialRewardSection: React.FC<SpecialRewardSectionProps> = ({
             className="flex cursor-pointer space-x-2"
             onClick={() => onTaskClick(task)}
           >
-            <LogoIcon size={50} />
+            <Image
+              src={TASK_CONFIG_MAP[task.type]?.iconPath || ''}
+              width={50}
+              height={50}
+              alt="task icon"
+            />
             <div className="flex flex-1 items-center justify-between">
               <div className="flex flex-col space-y-1">
                 <p className="text-14 text-gray-600">{task.title}</p>

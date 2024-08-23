@@ -1,4 +1,5 @@
 import platform from 'platform';
+
 export class AppUtils {
   private static readonly IOS_APP_URL =
     'https://apps.apple.com/us/app/wav-ai-music-song-maker/id6618139996';
@@ -30,5 +31,13 @@ export class AppUtils {
         window.location.href = this.FALLBACK_URL;
       }
     }, 1000);
+  }
+
+  /**
+   * 打开指定的外部链接。
+   * @param url 外部链接的URL。
+   */
+  static openExternalLink(url: string) {
+    window.open(url, '_blank');
   }
 }

@@ -75,10 +75,11 @@ const Segment: React.FC<SegmentProps> = ({
                 segmentRefs.current.delete(segment.id);
               }
             }}
-            className={`relative z-10 flex-1 px-6 py-2 font-medium
+            className={`relative z-10 flex-1 px-4 py-2 font-medium
                        ${segment.id === activeSegment ? 'text-black' : 'text-gray-400'}`}
             style={{
               borderRadius: formatStyleValue(borderRadius),
+              margin: '0 2px', // 为每个按钮设置 margin 左右为 2px
             }}
             onClick={() => onChange(segment.id)}
           >

@@ -9,13 +9,13 @@ import RewardTitle from './RewardTitle';
 interface DailyRewardSectionProps {
   claimed: boolean;
   onClick: () => void; // Rename to match intention
-  todayReward: number;
+  totalSignRewards: number;
 }
 
 const DailyRewardSection: React.FC<DailyRewardSectionProps> = ({
   claimed,
   onClick,
-  todayReward = 0,
+  totalSignRewards = 0,
 }) => {
   return (
     <div className="mt-6">
@@ -30,7 +30,7 @@ const DailyRewardSection: React.FC<DailyRewardSectionProps> = ({
               <p className="text-15 text-gray-600">Daily reward</p>
               <span className="flex items-center space-x-1">
                 <CurrencyIconButton size={15} />
-                <span className="">+{formatNumberWithCommas(todayReward)}</span>
+                <span className="">+{formatNumberWithCommas(totalSignRewards)}</span>
               </span>
             </div>
             {claimed ? (

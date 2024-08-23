@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 
 const HeartbeatMonitor: React.FC = () => {
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -24,17 +24,17 @@ const HeartbeatMonitor: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    // 每秒发送一次心跳
-    intervalIdRef.current = setInterval(sendHeartbeat, 1000);
+  // useEffect(() => {
+  //   // 每秒发送一次心跳
+  //   intervalIdRef.current = setInterval(sendHeartbeat, 1000);
 
-    // 清理函数：在组件卸载时清理心跳监测
-    return () => {
-      if (intervalIdRef.current) {
-        clearInterval(intervalIdRef.current);
-      }
-    };
-  }, []);
+  //   // 清理函数：在组件卸载时清理心跳监测
+  //   return () => {
+  //     if (intervalIdRef.current) {
+  //       clearInterval(intervalIdRef.current);
+  //     }
+  //   };
+  // }, []);
 
   return null;
 };

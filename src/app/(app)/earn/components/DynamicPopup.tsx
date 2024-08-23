@@ -1,6 +1,6 @@
 'use client';
 import { Popup } from '@/components';
-import { IEarnPopupType, ITask } from '@/types';
+import { IDailySignData, IEarnPopupType, ITask } from '@/types';
 import React from 'react';
 import RewardDetailContent from './RewardDetailContent';
 import TaskDetailContent from './TaskDetailContent';
@@ -12,11 +12,9 @@ interface DynamicPopupProps {
   contentProps: {
     task?: ITask;
     onComplete: () => void;
-    onClaim?: (newStreak: number, currentUTCDate: string) => void;
-    onCheck?: () => void;
-    rewardDays?: number[];
-    lastClaimDate?: string | null;
-    currentStreak?: number;
+    onClaim: () => void;
+    onCheck: () => void;
+    dailySigns: IDailySignData[];
     completeLoading?: boolean;
     checkLoading?: boolean;
     rewardLoading?: boolean;
@@ -41,9 +39,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({ visible, onClose, type, con
       return (
         <>
           <RewardDetailContent
-            rewardDays={contentProps.rewardDays || []}
-            lastClaimDate={contentProps.lastClaimDate}
-            currentStreak={contentProps.currentStreak || 0}
+            dailySigns={contentProps.dailySigns}
             onClaim={contentProps.onClaim || (() => {})}
             onClose={onClose}
             loading={contentProps.rewardLoading || false}

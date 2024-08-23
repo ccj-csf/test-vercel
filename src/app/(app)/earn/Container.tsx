@@ -1,39 +1,48 @@
 'use client';
 import { getEarnDataAction, updateEarnDataAction } from '@/actions';
+import { TASK_CONFIG_MAP } from '@/constants';
 import { useCoinStore } from '@/store';
-import { IDailyReward, IEarnData, IEarnPopupType, ITask } from '@/types';
-import { startVibrate } from '@/utils';
+import { IDailySignData, IEarnPopupType, ITask } from '@/types';
+import { AppUtils, openInviteCodeLink, startVibrate } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
-import React, { useCallback, useState } from 'react';
-import DailyRewardSection from './components/DailyRewardSection';
+import dayjs from 'dayjs';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import DailyList from './components/DailyList';
 import DynamicPopup from './components/DynamicPopup';
-import SpecialRewardSection from './components/SpecialRewardSection';
+import SpecialList from './components/SpecialList';
 import TaskList from './components/TaskList';
+import { dailyRewards as defaultDailyRewards, specialTasks, tasks } from './data';
 
-interface IProps {
-  data: IEarnData;
-}
-
-const Container: React.FC<IProps> = ({ data }) => {
+const Container: React.FC = () => {
   const { triggerNotification } = useCoinStore();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<IEarnPopupType>('taskDetail');
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
-  const [taskList, setTaskList] = useState<ITask[]>(data.tasks);
-  const [specialTaskList, setSpecialTaskList] = useState<ITask[]>(data.specialTasks);
-  const [dailyRewards, setDailyRewards] = useState<IDailyReward>(data.dailyReward);
+  const [dailySigns, setDailySigns] = useState<IDailySignData[]>([]);
+  const [taskList, setTaskList] = useState<ITask[]>(tasks);
+  const [specialTaskList, setSpecialTaskList] = useState<ITask[]>(specialTasks);
+  const [dailyRewards, setDailyRewards] = useState<ITask[]>(defaultDailyRewards);
+  const [totalSignRewards, setTotalSignRewards] = useState(0);
   const [rewardLoading, setRewardLoading] = useState(false);
   const [completeLoading, setCompleteLoading] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
 
-  const updateData = useMemoizedFn(async () => {
+  // 初始化数据
+  const initData = useMemoizedFn(async () => {
     const res = await getEarnDataAction();
     if (res.data) {
-      setDailyRewards(res.data.dailyReward);
+      console.log('🚀 ~ initData ~ res.data:', res?.data);
+      setDailyRewards(res.data.dailyRewards);
       setSpecialTaskList(res.data.specialTasks);
       setTaskList(res.data.tasks);
+      setDailySigns(res.data.dailySigns);
+      setTotalSignRewards(res.data.dailyRewards[0].reward);
     }
   });
+
+  useEffect(() => {
+    initData();
+  }, [initData]);
 
   const handleTaskClick = (task: ITask) => {
     startVibrate();
@@ -59,24 +68,38 @@ const Container: React.FC<IProps> = ({ data }) => {
       if (response.data) {
         if (specialTaskList.find((task) => task.id === updatedTask.id)) {
           setSpecialTaskList((prevTasks) =>
-            prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)),
+            prevTasks.map((task) =>
+              task.id === updatedTask.id ? { ...task, ...updatedTask } : task,
+            ),
           );
         } else {
           setTaskList((prevTasks) =>
-            prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)),
+            prevTasks.map((task) =>
+              task.id === updatedTask.id ? { ...task, ...updatedTask } : task,
+            ),
           );
         }
       }
       setLoading(false);
       handlePopupClose();
-      await updateData();
     },
-    [specialTaskList, updateData],
+    [specialTaskList],
   );
 
   const handleTaskComplete = () => {
     if (selectedTask) {
       startVibrate();
+      const taskConfig = TASK_CONFIG_MAP[selectedTask.type];
+
+      const actionMap: Record<string, () => void> = {
+        downloadApp: () => AppUtils.openAppOrRedirect(),
+        inviteFriends: openInviteCodeLink,
+        default: () => AppUtils.openExternalLink(taskConfig.link!),
+      };
+
+      const executeAction = actionMap[selectedTask.type] || actionMap.default;
+      executeAction();
+
       const updatedTask = { ...selectedTask, status: 'inProgress' as const };
       handleTaskUpdate(updatedTask, setCompleteLoading);
     }
@@ -90,41 +113,45 @@ const Container: React.FC<IProps> = ({ data }) => {
     }
   };
 
-  const handleDailyRewardClaim = async (newStreak: number, currentUTCDate: string) => {
+  const handleDailyRewardClaim = async () => {
     startVibrate();
     setRewardLoading(true);
-    const todayReward = dailyRewards?.rewardDays[newStreak - 1] || 0;
 
-    // 调用 API 更新数据
-    const response = await updateEarnDataAction('dailyReward', {
-      currentStreak: newStreak,
-      lastClaimDate: currentUTCDate,
-      totalRewards: dailyRewards.totalRewards + todayReward,
-    });
+    const response = await updateEarnDataAction('dailyReward', {});
 
-    // 检查响应数据类型并更新状态
     if (response.data) {
-      const updatedDailyReward = response.data as IDailyReward;
-      setDailyRewards(updatedDailyReward);
+      const today = dayjs().format('YYYY-MM-DD'); // 获取当前日期
+      let reward = 0;
+
+      setDailySigns((prevSigns) =>
+        prevSigns.map((sign) => {
+          if (sign.date === today) {
+            reward = sign.points;
+            return { ...sign, signed: true };
+          }
+          return sign;
+        }),
+      );
+
+      setTotalSignRewards((prevReward) => prevReward + reward);
     }
 
     setRewardLoading(false);
     handlePopupClose();
-    triggerNotification(true); // 触发通知
-    await updateData();
+    triggerNotification(true);
   };
+
+  const claimed = useMemo(() => {
+    return dailySigns.some((sign) => sign.signed);
+  }, [dailySigns]);
 
   return (
     <div className="min-h-screen bg-gray-100 py-6">
-      <SpecialRewardSection
-        title="Special"
-        specialTasks={specialTaskList}
-        onTaskClick={handleTaskClick}
-      />
-      <DailyRewardSection
-        onClick={() => handleRewardClick()}
-        claimed={!!dailyRewards?.currentStreak}
-        todayReward={dailyRewards?.totalRewards}
+      <SpecialList title="Special" specialTasks={specialTaskList} onTaskClick={handleTaskClick} />
+      <DailyList
+        onClick={handleRewardClick}
+        claimed={claimed}
+        totalSignRewards={totalSignRewards}
       />
       <TaskList tasks={taskList} onTaskClick={handleTaskClick} />
       <DynamicPopup
@@ -133,11 +160,9 @@ const Container: React.FC<IProps> = ({ data }) => {
         contentProps={{
           task: selectedTask ?? undefined,
           onComplete: handleTaskComplete,
+          dailySigns: dailySigns,
           onClaim: handleDailyRewardClaim,
           onCheck: handleTaskCheck,
-          rewardDays: dailyRewards?.rewardDays,
-          lastClaimDate: dailyRewards?.lastClaimDate,
-          currentStreak: dailyRewards?.currentStreak,
           completeLoading,
           checkLoading,
           rewardLoading,

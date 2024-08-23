@@ -32,9 +32,9 @@ const Tabbar: FC<TabbarProps> = memo((props) => {
 
   return withNativeProps(
     props,
-    <div className="z-100 fixed bottom-0 left-0 grid w-full grid-cols-5 items-center justify-between  pb-6">
+    <div className="z-100 fixed bottom-0 left-0 grid w-full grid-cols-4 items-center justify-between  pb-6">
       {renderIcon('home')}
-      {renderIcon('mine')}
+      {/* {renderIcon('mine')} */}
       {renderIcon('friends')}
       {renderIcon('earn')}
       {renderIcon('account')}
