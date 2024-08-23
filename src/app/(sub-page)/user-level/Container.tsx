@@ -1,6 +1,6 @@
 'use client';
-import { getUserLevelDataAction } from '@/actions/user-level';
 import { CoinNotification } from '@/biz-components';
+import { getUserLevelData } from '@/services';
 import { useUserInfoStore } from '@/store';
 import { ILevel, ILevelNumber, IUserLevel } from '@/types';
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
@@ -78,7 +78,7 @@ const Container: React.FC = () => {
 
       try {
         if (!state.leaderboardData[level]) {
-          const response = await getUserLevelDataAction(level);
+          const response = await getUserLevelData({ level });
           if (response.success && response.data) {
             const data = response.data;
             dispatch({ type: 'SET_LEADERBOARD_DATA', level, data });

@@ -22,6 +22,7 @@ export const HOW_TO_PLAY_URL =
 export const TWITTER_URL = 'https://twitter.com/CharacterXAI';
 export const TELEGRAM_URL = process.env.NEXT_PUBLIC_TG_GROUP_URL || '';
 export const LEARN_MORE_URL = 'https://t.me/CharacterX_News';
+export const TELEGRAM_GROUP_URL = process.env.NEXT_PUBLIC_TG_GROUP_URL || '';
 
 export const DEFAULT_AVATAR = '/imgs/default-avatar.png';
 export const DEFAULT_LEVEL = 1;

@@ -1,9 +1,9 @@
 'use client';
-import { getEarnDataAction, updateEarnDataAction } from '@/actions';
-import { TASK_CONFIG_MAP } from '@/constants';
+import { TASK_CONFIG_MAP, TELEGRAM_GROUP_URL } from '@/constants';
+import { getEarnData, updateEarnData } from '@/services';
 import { useCoinStore } from '@/store';
 import { IDailySignData, IEarnPopupType, ITask } from '@/types';
-import { AppUtils, openInviteCodeLink, startVibrate } from '@/utils';
+import { AppUtils, openInviteCodeLink, openTelegramLink, startVibrate } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -29,7 +29,8 @@ const Container: React.FC = () => {
 
   // 初始化数据
   const initData = useMemoizedFn(async () => {
-    const res = await getEarnDataAction();
+    const res = await getEarnData();
+    console.log('🚀 ~ initData ~ res:', res);
     if (res.data) {
       console.log('🚀 ~ initData ~ res.data:', res?.data);
       setDailyRewards(res.data.dailyRewards);
@@ -64,7 +65,7 @@ const Container: React.FC = () => {
   const handleTaskUpdate = useCallback(
     async (updatedTask: ITask, setLoading: (loading: boolean) => void) => {
       setLoading(true);
-      const response = await updateEarnDataAction('tasks', updatedTask);
+      const response = await updateEarnData({ type: 'tasks', data: updatedTask });
       if (response.data) {
         if (specialTaskList.find((task) => task.id === updatedTask.id)) {
           setSpecialTaskList((prevTasks) =>
@@ -94,6 +95,7 @@ const Container: React.FC = () => {
       const actionMap: Record<string, () => void> = {
         downloadApp: () => AppUtils.openAppOrRedirect(),
         inviteFriends: openInviteCodeLink,
+        joinTelegram: () => openTelegramLink(TELEGRAM_GROUP_URL),
         default: () => AppUtils.openExternalLink(taskConfig.link!),
       };
 
@@ -117,7 +119,7 @@ const Container: React.FC = () => {
     startVibrate();
     setRewardLoading(true);
 
-    const response = await updateEarnDataAction('dailyReward', {});
+    const response = await updateEarnData({ type: 'dailyReward', data: {} });
 
     if (response.data) {
       const today = dayjs().format('YYYY-MM-DD'); // 获取当前日期
