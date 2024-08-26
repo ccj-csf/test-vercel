@@ -2,11 +2,11 @@ const { Bot, API_CONSTANTS } = require('grammy');
 
 function start(token, isProd = false) {
   const bot = new Bot(token);
-  let webhook = `https://test.miniapp.characterx.ai/api/v1/webhook/bot`;
+  let webhook = `https://test.miniapp.wav.ai/api/v1/webhook/bot`;
   let webAppUrl = `https://develop.wav-miniapp.pages.dev/login`;
 
   if (isProd) {
-    webhook = `https://miniapp.characterx.ai/api/v1/webhook/bot`;
+    webhook = `https://miniapp.wav.ai/api/v1/webhook/bot`;
     webAppUrl = `https://develop.wav-miniapp.pages.dev/login`;
   }
 

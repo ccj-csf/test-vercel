@@ -41,4 +41,4 @@ const nextConfig = {
 };
 
 // 将 withNextIntl 和 withBundleAnalyzer 链式调用
-export default withBundleAnalyzer(withNextIntl(nextConfig));
+export default withNextIntl(nextConfig);

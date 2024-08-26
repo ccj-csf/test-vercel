@@ -1,5 +1,6 @@
 import { UserTaskTypeEnum } from '@/enums';
 import { IAuth } from './character';
+import { ILevel } from './user-level';
 
 export interface IUserProfile {
   auth?: IAuth;
@@ -82,4 +83,29 @@ export interface IUserBindParams {
 
 export interface IUserActiveParams {
   touch: boolean;
+}
+
+export interface ITokenData {
+  accessToken: string; // 认证 token
+  tokenType: string; // token 类型
+  expiresIn: number; // 过期时间，单位为秒
+  expiresAt: string; // 过期时间戳，ISO 字符串格式
+  refreshToken: string; // 刷新 token
+  refreshTokenExpiresAt: string; // 刷新 token 的过期时间
+}
+
+export interface IAppConfig {
+  levels: ILevel[];
+}
+
+export interface IUserInfo {
+  userName: string;
+  avatar: string;
+  level: number;
+  profitPerHour: number;
+  totalPoints: number;
+  inviteCode: string;
+  profitPerSecond: number;
+  rewardPoints: number; // 积分
+  invites: number; // 邀请人数
 }

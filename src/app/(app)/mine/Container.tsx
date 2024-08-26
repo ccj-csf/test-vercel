@@ -2,7 +2,7 @@
 import { getMineDataAction } from '@/actions';
 import { CurrencyDisplay } from '@/biz-components';
 import { Button, Popup, Segment } from '@/components';
-import { useCoinStore, useUserInfoStore } from '@/store';
+import { useAnimationStore, useUserInfoStore } from '@/store';
 import { ICardItem, IMineDataType } from '@/types';
 import { startVibrate } from '@/utils';
 import Image from 'next/image';
@@ -15,8 +15,8 @@ interface IProps {
 }
 
 const Container: React.FC<IProps> = ({ data }) => {
-  const { triggerNotification } = useCoinStore();
-  const { coinBalance, updateProfitPerHour, profitPerHour } = useUserInfoStore();
+  const { triggerNotification } = useAnimationStore();
+  const { totalPoints, updateProfitPerHour, profitPerHour } = useUserInfoStore();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<ICardItem | null>(null);
@@ -82,7 +82,7 @@ const Container: React.FC<IProps> = ({ data }) => {
 
   return (
     <div className="flex flex-col items-center pb-5 text-black">
-      <ProfitDisplay profitPerHour={profitPerHour} currency={coinBalance} />
+      <ProfitDisplay profitPerHour={profitPerHour} currency={totalPoints} />
       <section className="!w-full px-4">
         <Segment
           sticky={true}
@@ -141,7 +141,7 @@ const Container: React.FC<IProps> = ({ data }) => {
           <div className="col-span-1" key={item.id} onClick={() => openModal(item)}>
             <CardItem
               cardData={item}
-              userCurrency={coinBalance}
+              userCurrency={totalPoints}
               onUpgrade={() => openModal(item)}
             />
           </div>

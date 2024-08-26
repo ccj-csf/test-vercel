@@ -1,11 +1,11 @@
 'use client';
-import { useCoinStore } from '@/store';
+import { useAnimationStore } from '@/store';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { CurrencyIconButton } from '../currency-icon-button';
 
 const CoinNotification: React.FC = () => {
-  const { coinCount, showNotification } = useCoinStore();
+  const { coinCount, showNotification } = useAnimationStore();
 
   return (
     <AnimatePresence>

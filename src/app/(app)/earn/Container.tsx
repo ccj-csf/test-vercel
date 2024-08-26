@@ -1,7 +1,7 @@
 'use client';
 import { TASK_CONFIG_MAP, TELEGRAM_GROUP_URL } from '@/constants';
 import { getEarnData, updateEarnData } from '@/services';
-import { useCoinStore } from '@/store';
+import { useAnimationStore } from '@/store';
 import { IDailySignData, IEarnPopupType, ITask } from '@/types';
 import { AppUtils, openInviteCodeLink, openTelegramLink, startVibrate } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
@@ -14,7 +14,7 @@ import TaskList from './components/TaskList';
 import { dailyRewards as defaultDailyRewards, specialTasks, tasks } from './data';
 
 const Container: React.FC = () => {
-  const { triggerNotification } = useCoinStore();
+  const { triggerNotification } = useAnimationStore();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<IEarnPopupType>('taskDetail');
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);

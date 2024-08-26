@@ -7,10 +7,9 @@ import {
   TonconnectProvider,
 } from '@/biz-components';
 import { LoadingProvider } from '@/components';
+import { dir } from '@/utils';
 import { CircleAlert, CircleCheck } from 'lucide-react';
 import { Toaster } from 'sonner';
-
-import { dir } from '@/utils';
 
 import { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -32,9 +31,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={dir(locale)}>
       <head>
-        {/* iconfont 链接 */}
         <link rel="stylesheet" href={process.env.NEXT_PUBLIC_ICONFONT_URL} />
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        {/* <script async={false} src="https://telegram.org/js/telegram-web-app.js"></script> */}
       </head>
       <body className={clashGrotesk.className}>
         <LoadingProvider>

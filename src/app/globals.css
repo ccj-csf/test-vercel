@@ -18,7 +18,7 @@ html,
 body {
   height: 100%;
   width: 100%;
-  color: black;
+  /* color: black; */
   font-family: var(--font-grotesk-grotesk); /* 确保全局字体设置 */
 }
 

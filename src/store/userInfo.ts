@@ -1,121 +1,131 @@
+import { getUserTotalPoints } from '@/services';
+import { IUserInfo } from '@/types';
 import { useEffect } from 'react';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 const SECONDS_PER_HOUR = 3600;
 const SYNC_INTERVAL_MS = 60 * 1000; // 同步间隔（毫秒）
 
-interface UserInfoState {
-  userName: string;
-  avatarUrl: string;
-  level: number;
-  profitPerHour: number;
-  coinBalance: number;
-  profitPerSecond: number;
-  rewardPoints: number; // 积分
-  invites: number; // 邀请人数
+interface UserInfoState extends IUserInfo {
   intervalId: NodeJS.Timeout | null;
-  setUserInfo: (info: Partial<UserInfoState>) => void;
+  setUserInfo: (info: Partial<IUserInfo>) => void;
   updateProfitPerHour: (increment: number, cost: number) => void;
   startProfitPerSecond: () => void;
   stopProfitPerSecond: () => void;
-  syncCoinBalance: () => void;
+  syncTotalPoints: () => void;
 }
 
-export const useUserInfoStore = create<UserInfoState>((set, get) => ({
-  userName: 'Kim Kardasham',
-  avatarUrl: 'https://d121vty759npai.cloudfront.net/images/648715e6e5df45a7b284d52e487b01f4.jpeg',
-  level: 2,
-  profitPerHour: 3600,
-  coinBalance: 189809,
-  profitPerSecond: 3600 / SECONDS_PER_HOUR,
-  rewardPoints: 5000, // 初始化积分
-  invites: 3, // 初始化邀请人数
-  intervalId: null,
+export const useUserInfoStore = create<UserInfoState>()(
+  persist(
+    (set, get) => ({
+      userName: '',
+      avatar: '',
+      level: 0,
+      profitPerHour: 0,
+      totalPoints: 0,
+      profitPerSecond: 3600 / SECONDS_PER_HOUR,
+      rewardPoints: 0,
+      invites: 0,
+      intervalId: null,
+      inviteCode: '',
 
-  setUserInfo: (info) => {
-    set((state) => {
-      const updatedState = { ...state, ...info };
+      setUserInfo: (info) => {
+        set((state) => {
+          const updatedState = { ...state, ...info };
 
-      if (info.profitPerHour !== undefined) {
-        updatedState.profitPerSecond = updatedState.profitPerHour / SECONDS_PER_HOUR;
-      }
+          if (info.profitPerHour !== undefined) {
+            updatedState.profitPerSecond = updatedState.profitPerHour / SECONDS_PER_HOUR;
+          }
 
-      return updatedState;
-    });
-  },
+          return updatedState;
+        });
+      },
 
-  updateProfitPerHour: (increment: number, cost: number) => {
-    const { profitPerHour, coinBalance, stopProfitPerSecond, startProfitPerSecond } = get();
+      updateProfitPerHour: (increment, cost) => {
+        const { profitPerHour, totalPoints, stopProfitPerSecond, startProfitPerSecond } = get();
 
-    if (coinBalance >= cost) {
-      const newProfitPerHour = profitPerHour + increment;
-      const newProfitPerSecond = newProfitPerHour / SECONDS_PER_HOUR;
+        if (totalPoints >= cost) {
+          const newProfitPerHour = profitPerHour + increment;
+          const newProfitPerSecond = newProfitPerHour / SECONDS_PER_HOUR;
 
-      stopProfitPerSecond();
+          stopProfitPerSecond();
 
-      set((state) => ({
-        profitPerHour: newProfitPerHour,
-        profitPerSecond: newProfitPerSecond,
-        coinBalance: state.coinBalance - cost,
-      }));
+          set((state) => ({
+            profitPerHour: newProfitPerHour,
+            profitPerSecond: newProfitPerSecond,
+            totalPoints: state.totalPoints - cost,
+          }));
 
-      startProfitPerSecond();
-    } else {
-      console.warn('Insufficient coin balance to increase profit per hour.');
-    }
-  },
+          startProfitPerSecond();
+        } else {
+          console.warn('Insufficient total points to increase profit per hour.');
+        }
+      },
 
-  startProfitPerSecond: () => {
-    const { profitPerSecond } = get();
+      startProfitPerSecond: () => {
+        const { profitPerSecond } = get();
 
-    const intervalId = setInterval(() => {
-      set((state) => ({
-        coinBalance: state.coinBalance + profitPerSecond,
-      }));
-    }, 1000);
+        const intervalId = setInterval(() => {
+          set((state) => ({
+            totalPoints: state.totalPoints + profitPerSecond,
+          }));
+        }, 1000);
 
-    set({ intervalId });
-  },
+        set({ intervalId });
+      },
 
-  stopProfitPerSecond: () => {
-    const { intervalId } = get();
-    if (intervalId) {
-      clearInterval(intervalId);
-      set({ intervalId: null });
-    }
-  },
+      stopProfitPerSecond: () => {
+        const { intervalId } = get();
+        if (intervalId) {
+          clearInterval(intervalId);
+          set({ intervalId: null });
+        }
+      },
 
-  syncCoinBalance: async () => {
-    const { coinBalance } = get();
-    // console.log('🚀 ~ syncCoinBalance: ~ coinBalance:', coinBalance);
+      syncTotalPoints: async () => {
+        try {
+          // 调用后端API同步 totalPoints
+          const res = await getUserTotalPoints();
 
-    try {
-      // 调用后端API同步 coinBalance，这里用 fetch 作为示例
-      await fetch('/api/sync-coin-balance', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ coinBalance }),
-      });
-    } catch (error) {
-      console.error('Failed to sync coin balance:', error);
-    }
-  },
-}));
+          if (res?.data) {
+            set({ totalPoints: res.data.totalPoints });
+            console.log('Total points synced successfully:', res.data.totalPoints);
+          }
+        } catch (error) {
+          console.error('Failed to sync total points:', error);
+        }
+      },
+    }),
+    {
+      name: 'user-info-storage', // 存储在 localStorage 中的 key 名称
+      partialize: (state) =>
+        ({
+          userName: state.userName,
+          avatar: state.avatar,
+          level: state.level,
+          profitPerHour: state.profitPerHour,
+          totalPoints: state.totalPoints,
+          rewardPoints: state.rewardPoints,
+          invites: state.invites,
+          inviteCode: state.inviteCode,
+        }) as UserInfoState, // 指定需要持久化的字段
+    },
+  ),
+);
 
 export const useStartProfitPerSecond = () => {
-  const { startProfitPerSecond, stopProfitPerSecond, syncCoinBalance } = useUserInfoStore();
+  const { startProfitPerSecond, stopProfitPerSecond, syncTotalPoints } = useUserInfoStore();
 
   useEffect(() => {
     startProfitPerSecond();
 
-    // 设置每 SYNC_INTERVAL_MS 同步一次 coinBalance
-    const syncInterval = setInterval(syncCoinBalance, SYNC_INTERVAL_MS);
+    // 设置每 SYNC_INTERVAL_MS 同步一次 totalPoints
+    const syncInterval = setInterval(syncTotalPoints, SYNC_INTERVAL_MS);
 
     return () => {
       stopProfitPerSecond();
       clearInterval(syncInterval);
     };
-  }, [startProfitPerSecond, stopProfitPerSecond, syncCoinBalance]);
+  }, [startProfitPerSecond, stopProfitPerSecond, syncTotalPoints]);
 };

@@ -28,3 +28,14 @@ export interface IScrollItem {
 }
 
 export type IScrollItemDataListResult<T = IScrollItem> = IFetchDataListResult<T>;
+
+export interface ISong {
+  id: string;
+  title: string;
+  cover: string;
+  style: string;
+  desc: string;
+  lyrics: string;
+  sourceUrl: string;
+  artist: string;
+}

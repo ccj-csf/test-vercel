@@ -19,7 +19,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
 }) => {
   const { isTrackCompleted } = useMusicPlayerStore();
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const { setUserInfo, coinBalance } = useUserInfoStore();
+  const { setUserInfo, totalPoints } = useUserInfoStore();
 
   // 奖励金额
   const rewardOneAmount = 100;
@@ -61,13 +61,13 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
   useEffect(() => {
     if (currentTime > 0 && currentTime >= rewardNodeOnePosition && !rewardsClaimed.node1) {
       alert('You have claimed your 1 reward for today. Please come back tomorrow.');
-      setUserInfo({ coinBalance: coinBalance + rewardOneAmount });
+      setUserInfo({ totalPoints: totalPoints + rewardOneAmount });
       setRewardsClaimed((prev) => ({ ...prev, node1: true }));
       store.set(rewardKeyNode1, true);
     }
     if (currentTime > 0 && currentTime >= rewardNodeTwoPosition && !rewardsClaimed.node2) {
       alert('You have claimed your 2 reward for today. Please come back tomorrow.');
-      setUserInfo({ coinBalance: coinBalance + rewardTwoAmount });
+      setUserInfo({ totalPoints: totalPoints + rewardTwoAmount });
       setRewardsClaimed((prev) => ({ ...prev, node2: true }));
       store.set(rewardKeyNode2, true);
     }

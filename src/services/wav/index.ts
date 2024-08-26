@@ -1,5 +1,17 @@
-import { API_EARN, API_FRIENDS, API_MINE, API_USER_LEVEL } from '@/constants';
 import {
+  API_APP_ALIVE,
+  API_APP_CONFIG,
+  API_APP_MUSIC,
+  API_EARN,
+  API_FRIENDS,
+  API_LOGIN,
+  API_MINE,
+  API_USER_INFO,
+  API_USER_LEVEL,
+  API_USER_POINTS,
+} from '@/constants';
+import {
+  IAppConfig,
   IDailyReward,
   IEarnData,
   IEarnDataType,
@@ -8,7 +20,10 @@ import {
   IMineData,
   IMineDataType,
   IResponseWrapper,
+  ISong,
   ITask,
+  ITokenData,
+  IUserInfo,
   IUserLevel,
   UpdatePayload,
 } from '@/types';
@@ -49,5 +64,51 @@ export const getUserLevelData = (params: { level: ILevelNumber }) => {
   return apiService.get<IResponseWrapper<IUserLevel[]>>({
     apiName: API_USER_LEVEL,
     params,
+  });
+};
+
+export const login = (params: {
+  initRawData: string;
+  inviteCode: string;
+}): Promise<IResponseWrapper<ITokenData>> => {
+  return apiService.post<IResponseWrapper<ITokenData>>({
+    apiName: API_LOGIN,
+    params,
+  });
+};
+
+export const getAppConfig = () => {
+  return apiService.get<IResponseWrapper<IAppConfig>>({
+    apiName: API_APP_CONFIG,
+  });
+};
+
+export const getAppMusic = () => {
+  return apiService.get<IResponseWrapper<ISong[]>>({
+    apiName: API_APP_MUSIC,
+  });
+};
+
+export const getUserInfo = () => {
+  return apiService.get<IResponseWrapper<IUserInfo>>({
+    apiName: API_USER_INFO,
+  });
+};
+
+export const sendAppHeartbeat = () => {
+  return apiService.put<IResponseWrapper<null>>({
+    apiName: API_APP_ALIVE,
+  });
+};
+
+export const getUserTotalPoints = () => {
+  return apiService.get<
+    IResponseWrapper<{
+      timestamp: string;
+      userId: string;
+      totalPoints: number;
+    }>
+  >({
+    apiName: API_USER_POINTS,
   });
 };

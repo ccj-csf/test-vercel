@@ -1,17 +1,7 @@
+import { ISong } from '@/types';
 import { Howl } from 'howler';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export interface ISong {
-  id: string;
-  title: string;
-  cover: string;
-  style: string;
-  desc: string;
-  lyrics: string;
-  sourceUrl: string;
-  artist: string;
-}
 
 export type IPlayMode = 'loop' | 'shuffle' | 'repeat';
 

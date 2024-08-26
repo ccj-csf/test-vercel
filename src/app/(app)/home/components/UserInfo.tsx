@@ -10,7 +10,7 @@ import Image from 'next/image';
 import React from 'react';
 
 const UserInfo: React.FC = () => {
-  const { userName, avatarUrl, level, profitPerHour } = useUserInfoStore();
+  const { userName, avatar, level, profitPerHour } = useUserInfoStore();
   const { gotoUserLevelPage, gotoMinePage } = useNavigate();
 
   const maxLevel = 10; // 假设总等级数为10
@@ -19,7 +19,7 @@ const UserInfo: React.FC = () => {
   return (
     <div className="flex flex-col space-y-4">
       <section className="flex items-center space-x-1">
-        <Image src={avatarUrl} alt={userName} width={24} height={24} className="rounded-full" />
+        <Image src={avatar} alt={userName} width={24} height={24} className="rounded-full" />
         <h2 className="text-13">{userName}</h2>
       </section>
       <section className="grid grid-cols-2 gap-4 text-12">

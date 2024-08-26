@@ -13,16 +13,16 @@ interface ILevelConditionsProps {
 }
 
 const LevelConditions: React.FC<ILevelConditionsProps> = ({ level, isCurrentLevel }) => {
-  const { coinBalance, invites = 0 } = useUserInfoStore();
+  const { totalPoints, invites = 0 } = useUserInfoStore();
 
   if (isCurrentLevel) {
     // 如果用户在当前等级，显示左侧样式
-    const percent = Math.min((coinBalance / level.points) * 100, 100);
+    const percent = Math.min((totalPoints / level.points) * 100, 100);
 
     return (
       <div className="level-conditions flex flex-col items-center">
         <div className="mb-2 flex w-[260px] items-center justify-between text-15">
-          <span className="text-green">{formatNumberToK(coinBalance)}</span>
+          <span className="text-green">{formatNumberToK(totalPoints)}</span>
           <div className="mx-2 w-4/5">
             <ProgressBar
               percent={percent}

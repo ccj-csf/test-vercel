@@ -1,17 +1,19 @@
 'use client';
 
 import { CurrencyIconButton, FormattedFlipNumbers } from '@/biz-components';
-import { useUserInfoStore } from '@/store';
 import { formatNumberWithCommas } from '@/utils';
 import React from 'react';
-const CoinBalance: React.FC = () => {
-  const { coinBalance } = useUserInfoStore();
-  const formattedBalance = formatNumberWithCommas(coinBalance);
+
+interface CoinBalanceProps {
+  displayedTotalPoints: number;
+}
+
+const CoinBalance: React.FC<CoinBalanceProps> = ({ displayedTotalPoints }) => {
   return (
     <div className="mt-5 flex items-center justify-center">
       <CurrencyIconButton size={28}></CurrencyIconButton>
       <FormattedFlipNumbers
-        value={coinBalance}
+        value={displayedTotalPoints}
         height={38}
         width={26}
         color="black"

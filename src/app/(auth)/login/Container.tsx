@@ -1,125 +1,92 @@
 'use client';
-import { loginAction } from '@/actions';
-import { ROUTES_HOME } from '@/constants';
-import { useUser } from '@/hooks';
-import { useMusicPlayerStore, useUserInfoStore, useUserStore } from '@/store';
+import { BACKGROUND_COLOR, PRIMARY_COLOR } from '@/constants';
+import { useNavigate } from '@/hooks';
+import { getAppConfig, getAppMusic, getUserInfo, login } from '@/services';
+import { useAppConfigStore, useMusicPlayerStore, useUserInfoStore } from '@/store';
 import { IWebAppInitData } from '@/types';
 import { Auth, TgUtils } from '@/utils';
 import { useMemoizedFn } from 'ahooks';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { FC, memo, useEffect } from 'react';
-const defaultPlaylist = [
-  {
-    id: '1',
-    title: 'Suno Please Fix',
-    cover: 'https://cdn2.suno.ai/5b83f352-1956-4ca2-8534-2af03bf76863_aace3111.jpeg',
-    style: 'Pop',
-    desc: 'A popular song by SirBitesAlot.',
-    lyrics: 'La la la la...',
-    sourceUrl: 'https://cdn1.suno.ai/5b83f352-1956-4ca2-8534-2af03bf76863.mp3',
-    artist: 'SirBitesAlot',
-  },
-  {
-    id: '2',
-    title: 'Where Do We Go From Here?',
-    cover: 'https://cdn2.suno.ai/image_1c24de5d-28bc-44f4-bac3-93a8a3ab3604.jpeg',
-    style: 'Rock',
-    desc: 'A rock song by sushileaf 🍣🍃',
-    lyrics: 'Rock and roll...',
-    sourceUrl: 'https://cdn1.suno.ai/290fc7e0-4796-4c05-a0c0-8c92e1e2827a.mp3',
-    artist: 'sushileaf 🍣🍃',
-  },
-  {
-    id: '3',
-    title: 'Free Fallin',
-    cover: 'https://cdn2.suno.ai/9b3a0739-ebad-4a3b-97eb-40dabf4186b5_5d97716c.jpeg',
-    style: 'Rock',
-    desc: 'A rock song by sushileaf 🍣🍃',
-    lyrics: 'Rock and roll...',
-    sourceUrl: 'https://cdn1.suno.ai/5a285fbc-f64a-418a-8b2e-05e3e7990899.mp3',
-    artist: 'free',
-  },
-];
+
+const testInitData =
+  'user=%7B%22id%22%3A6870169413%2C%22first_name%22%3A%22cf%22%2C%22last_name%22%3A%22c%22%2C%22username%22%3A%22csfsil%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=8702549389354008256&chat_type=private&auth_date=1724653906&hash=e3b59fbcd63c1f871191998f5309697fe5219e33b2cc2fc366a9445ede6eaa49';
 
 interface LoginProps {}
 const Container: FC<LoginProps> = memo((props) => {
-  const { setPlaylist, playTrack } = useMusicPlayerStore();
+  const { setPlaylist } = useMusicPlayerStore();
+  const { setConfig } = useAppConfigStore();
+  const { setUserInfo } = useUserInfoStore();
+  const { gotoHomePage } = useNavigate();
 
-  const {} = props;
-
-  const { setIsLogin, setUserProfile } = useUserStore();
-  const { initUserInfo } = useUser();
-  const router = useRouter();
-
-  const login = useMemoizedFn(async () => {
+  const loginAction = useMemoizedFn(async () => {
     const WebApp = window?.Telegram?.WebApp;
-    if (WebApp.initData) {
-      const authInitDataParams = new URLSearchParams(WebApp.initData);
+    const initData = WebApp.initData || testInitData;
+    if (initData) {
+      const authInitDataParams = new URLSearchParams(initData);
       const authInitData = Object.fromEntries(authInitDataParams);
-
-      authInitData.user = JSON.parse(authInitData.user);
       const authData = authInitData as unknown as IWebAppInitData;
 
-      const tgUserLoginApiData = {
-        ...authData,
+      const LoginDataParams = {
+        initRawData: initData,
+        inviteCode: '',
       };
 
       // 邀请逻辑
       if (authData.start_param) {
         let inviteCode = authData.start_param;
         inviteCode = inviteCode.replace(TgUtils.inviteCodePrefix, '');
-        Object.assign(tgUserLoginApiData, { invite_code: inviteCode });
+        Object.assign(LoginDataParams, { inviteCode: inviteCode });
       }
-      console.log('tgUserLoginApiData', tgUserLoginApiData);
 
-      const res = await loginAction(tgUserLoginApiData);
+      const res = await login(LoginDataParams);
+      console.log('🚀 ~ loginAction ~ res:', res);
+
       if (res?.data) {
-        Auth.setToken(res.data.access_token);
-        Auth.setNewUser(res.data.new_user);
-        setIsLogin(!!res.data.access_token);
-        setUserProfile(res.data.profile);
-        router.push(ROUTES_HOME);
-      }
+        Auth.setToken(res.data.accessToken);
 
-      await initUserInfo();
+        // 使用 Promise.all 并行执行三个请求
+        const [appConfigRes, appMusicRes, userInfoRes] = await Promise.all([
+          getAppConfig(),
+          getAppMusic(),
+          getUserInfo(),
+        ]);
+
+        // 处理 getAppConfig 请求的结果
+        if (appConfigRes?.data) {
+          setConfig(appConfigRes.data);
+        }
+        console.log('🚀 ~ loginAction ~ appConfigRes:', appConfigRes);
+
+        // 处理 getAppMusic 请求的结果
+        if (appMusicRes?.data) {
+          setPlaylist(appMusicRes.data);
+        }
+        console.log('🚀 ~ loginAction ~ appMusicRes:', appMusicRes);
+
+        // 处理 getUserInfo 请求的结果
+        if (userInfoRes?.data) {
+          setUserInfo(userInfoRes.data);
+        }
+
+        console.log('🚀 ~ loginAction ~ userInfoRes:', userInfoRes);
+        gotoHomePage();
+      }
     }
   });
-  const { setUserInfo } = useUserInfoStore();
 
-  // 模拟用户登录后的数据设置
   useEffect(() => {
-    const userData = {
-      userName: 'Kim Kardasham',
-      avatarUrl:
-        'https://d121vty759npai.cloudfront.net/images/648715e6e5df45a7b284d52e487b01f4.jpeg',
-      level: 2,
-      profitPerHour: 3600,
-      coinBalance: 189809,
+    const WebApp = window?.Telegram?.WebApp;
+    if (WebApp) {
+      WebApp?.setHeaderColor(PRIMARY_COLOR);
+      WebApp?.setBackgroundColor(PRIMARY_COLOR);
+      loginAction();
+    }
+    return () => {
+      WebApp.setHeaderColor(BACKGROUND_COLOR);
+      WebApp.setBackgroundColor(BACKGROUND_COLOR);
     };
-    setUserInfo(userData); // 更新用户信息和初始收益数据
-    setPlaylist(defaultPlaylist);
-    // playTrack(0);
-  }, [playTrack, setPlaylist, setUserInfo]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      router.push(ROUTES_HOME);
-    }, 2000);
-  }, [router]);
-
-  // useEffect(() => {
-  //   const WebApp = window?.Telegram?.WebApp;
-  //   if (WebApp) {
-  //     WebApp?.setHeaderColor(PRIMARY_COLOR);
-  //     WebApp?.setBackgroundColor(PRIMARY_COLOR);
-  //     login();
-  //   }
-  //   return () => {
-  //     WebApp.setHeaderColor(BACKGROUND_COLOR);
-  //     WebApp.setBackgroundColor(BACKGROUND_COLOR);
-  //   };
-  // }, [login, router]);
+  }, []);
 
   return (
     <div className="relative flex h-screen w-full flex-col items-center  bg-login bg-cover bg-no-repeat px-[46px]">

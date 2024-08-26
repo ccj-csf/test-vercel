@@ -57,14 +57,14 @@ async function start() {
   bot.command('start', (ctx) => {
     const arr = ctx.message?.text?.split(' ') || [];
     const startParam = arr.length >= 2 ? arr[1] : '';
-    let url = `https://develop.wav-miniapp.pages.dev/login`;
+    let url = `https://develop.wav-miniapp.pages.dev`;
 
     if (startParam) {
       url += `?startParam=${startParam}`;
     }
 
     const inlineKeyboard = new InlineKeyboard()
-      .webApp('Play', url)
+      .webApp('Play-Cloud', url)
       .row()
       .url('X(Twitter)', 'https://twitter.com/CharacterXAI')
       .url('Community', 'https://t.me/CharacterX_Group')

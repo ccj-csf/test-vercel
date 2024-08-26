@@ -22,7 +22,6 @@ NEXT_PUBLIC_TG_GROUP_URL="https://t.me/chx_test_group"
 NEXT_PUBLIC_TG_MINIAPP_URL="https://t.me/ccj_dev_bot/dev" 
 NEXT_PUBLIC_ICONFONT_URL="https://cdn2.codesign.qq.com/icons/86jzxNyr6YN5n0b/latest/iconfont.css"
 NEXT_PUBLIC_TG_MINIAPP_TONCONNECT_MANIFEST_URL="https://develop.wav-miniapp.pages.dev/tonconnect-manifest-qa.json"
-NEXT_DEBUG = "true"
 
 
 
@@ -30,8 +29,8 @@ NEXT_DEBUG = "true"
 
 [env.production.vars]
 NODE_VERSION = "18.17.0"
-NEXT_PUBLIC_BASE_URL="https://develop.wav-miniapp.pages.dev" 
-NEXT_PUBLIC_API_TG_URL="https://develop.wav-miniapp.pages.dev" 
+NEXT_PUBLIC_BASE_URL="https://wav-miniapp.pages.dev" 
+NEXT_PUBLIC_API_TG_URL="https://wav-miniapp.pages.dev" 
 NEXT_PUBLIC_TG_GROUP_URL="https://t.me/chx_test_group" 
 NEXT_PUBLIC_ICONFONT_URL="https://cdn2.codesign.qq.com/icons/86jzxNyr6YN5n0b/latest/iconfont.css"
 NEXT_PUBLIC_TG_MINIAPP_URL="https://t.me/ccj_dev_bot/dev" 

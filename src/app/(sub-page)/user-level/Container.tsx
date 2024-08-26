@@ -3,6 +3,7 @@ import { CoinNotification } from '@/biz-components';
 import { getUserLevelData } from '@/services';
 import { useUserInfoStore } from '@/store';
 import { ILevel, ILevelNumber, IUserLevel } from '@/types';
+import { startVibrate } from '@/utils';
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import Leaderboard from './components/Leaderboard';
 import LevelConditions from './components/LevelConditions';
@@ -108,6 +109,7 @@ const Container: React.FC = () => {
 
   const handleNextLevel = () => {
     if (currentIndex < levels.length - 1) {
+      startVibrate();
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
       fetchLeaderboardData(levels[nextIndex].level);
@@ -116,6 +118,7 @@ const Container: React.FC = () => {
 
   const handlePrevLevel = () => {
     if (currentIndex > 0) {
+      startVibrate();
       const prevIndex = currentIndex - 1;
       setCurrentIndex(prevIndex);
       fetchLeaderboardData(levels[prevIndex].level);

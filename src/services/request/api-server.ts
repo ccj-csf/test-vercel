@@ -1,7 +1,6 @@
-// import { LOCAL_STORAGE_TOKEN, ROUTES_LOGIN } from '@/constants';
+import { Auth } from '@/utils';
 import { Service } from '@nxglabs-request/core';
 import { AxiosRequest } from '@nxglabs-request/request';
-// import store from 'store2';
 
 const timeout = 1000 * 600;
 
@@ -9,10 +8,11 @@ const http = new AxiosRequest({ timeout });
 
 http.interceptors.request.use(
   (config: any) => {
-    // const token = store(LOCAL_STORAGE_TOKEN);
-    // if (headers && token) {
-    //   headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = Auth.getToken();
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error: any) => {

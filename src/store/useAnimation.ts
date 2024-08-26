@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 
-interface CoinStoreState {
+interface AnimationStoreState {
   coinCount: number;
   showNotification: boolean;
   animationTimeout: NodeJS.Timeout | null;
   triggerNotification: (show: boolean, count?: number) => void;
 }
 
-export const useCoinStore = create<CoinStoreState>((set, get) => ({
-  coinCount: 100,
+export const useAnimationStore = create<AnimationStoreState>((set, get) => ({
+  coinCount: 400,
   showNotification: false,
   animationTimeout: null,
 
