@@ -34,6 +34,7 @@ const Container: FC<LoginProps> = memo((props) => {
 
       // 邀请逻辑
       if (authData.start_param) {
+        console.log('🚀 ~ loginAction ~ authData:', authData);
         let inviteCode = authData.start_param;
         inviteCode = inviteCode.replace(TgUtils.inviteCodePrefix, '');
         Object.assign(LoginDataParams, { inviteCode: inviteCode });
@@ -67,6 +68,7 @@ const Container: FC<LoginProps> = memo((props) => {
         // 处理 getUserInfo 请求的结果
         if (userInfoRes?.data) {
           setUserInfo(userInfoRes.data);
+          Auth.setInviteCode(userInfoRes.data.inviteCode);
         }
 
         console.log('🚀 ~ loginAction ~ userInfoRes:', userInfoRes);
@@ -86,7 +88,7 @@ const Container: FC<LoginProps> = memo((props) => {
       WebApp.setHeaderColor(BACKGROUND_COLOR);
       WebApp.setBackgroundColor(BACKGROUND_COLOR);
     };
-  }, []);
+  }, [loginAction]);
 
   return (
     <div className="relative flex h-screen w-full flex-col items-center  bg-login bg-cover bg-no-repeat px-[46px]">

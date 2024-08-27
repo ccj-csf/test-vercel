@@ -42,8 +42,7 @@ Revolutionize your music experience with WAV today. Share and enjoy the rhythm! 
 export class TgUtils {
   static inviteCodePrefix = 'invite_';
   static getInviteCode() {
-    const profile = Auth.getProfile();
-    const inviteCode = profile.invite_code || '';
+    const inviteCode = Auth.getInviteCode();
     return `${TgUtils.inviteCodePrefix}${inviteCode}`;
   }
 }

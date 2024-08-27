@@ -1,4 +1,9 @@
-import { LOCAL_STORAGE_NEW_USER, LOCAL_STORAGE_PROFILE, LOCAL_STORAGE_TOKEN } from '@/constants';
+import {
+  INVITE_CODE,
+  LOCAL_STORAGE_NEW_USER,
+  LOCAL_STORAGE_PROFILE,
+  LOCAL_STORAGE_TOKEN,
+} from '@/constants';
 import { IUserProfile } from '@/types';
 import store from 'store2';
 
@@ -36,6 +41,14 @@ export class Auth {
 
   static getProfile(): IUserProfile {
     return store.session.get(LOCAL_STORAGE_PROFILE) || {};
+  }
+
+  static setInviteCode(inviteCode: string) {
+    store.session.set(INVITE_CODE, inviteCode);
+  }
+
+  static getInviteCode(): string {
+    return store.session.get(INVITE_CODE) || '';
   }
 
   /**
