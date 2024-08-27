@@ -1,7 +1,6 @@
 'use server';
 
-import { getEarnData, updateEarnData } from '@/services';
-import { IEarnDataType, UpdatePayload } from '@/types';
+import { getEarnData } from '@/services';
 
 export async function getEarnDataAction() {
   return getEarnData();
