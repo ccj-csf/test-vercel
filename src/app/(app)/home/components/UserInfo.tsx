@@ -66,7 +66,7 @@ const UserInfo: React.FC = () => {
                 <span>+{formatNumberToK(profitPerHour)}</span>
               </span>
             </p>
-            <ChevronRight className="text-gray-300" size={18} />
+            {/* <ChevronRight className="text-gray-300" size={18} /> */}
           </div>
         </section>
       </section>

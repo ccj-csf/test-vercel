@@ -16,7 +16,7 @@ const HeartbeatMonitor: React.FC = () => {
 
   useEffect(() => {
     // 每秒发送一次心跳
-    intervalIdRef.current = setInterval(sendHeartbeat, 1000);
+    intervalIdRef.current = setInterval(sendHeartbeat, 100000);
 
     // 清理函数：在组件卸载时清理心跳监测
     return () => {

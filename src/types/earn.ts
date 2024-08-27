@@ -38,7 +38,7 @@ export interface IDailyReward {
 }
 
 export interface IEarnData {
-  dailyRewards: ITask[];
+  dailyTasks: ITask[];
   specialTasks: ITask[];
   tasks: ITask[];
   dailySigns: IDailySignData[];

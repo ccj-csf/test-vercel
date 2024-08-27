@@ -39,3 +39,10 @@ export interface ISong {
   sourceUrl: string;
   artist: string;
 }
+
+export interface IMusicRewardRequestData {
+  musicId: string;
+  rewardTime: number;
+  reward: number;
+  [key: string]: unknown;
+}

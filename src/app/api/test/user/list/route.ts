@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
   // 从查询参数中获取级别（假设级别从1到10）
   const { searchParams } = new URL(request.url);
   const level = parseInt(searchParams.get('level') || '1', 10);
-  console.log('🚀 ~ GET ~ level:', level);
 
   // 检查级别是否在有效范围内
   if (level < 1 || level > 10) {
@@ -31,13 +30,18 @@ export async function GET(request: NextRequest) {
 
   // 生成用户数据
   const userData: IUserLevel[] = usernames[level - 1].map((username, index) => ({
-    username,
-    points: Math.floor(Math.random() * 10000),
+    name: username,
+    totalPoints: Math.floor(Math.random() * 10000),
     isCurrentUser: index === 0,
-    avatarUrl: 'https://d121vty759npai.cloudfront.net/images/648715e6e5df45a7b284d52e487b01f4.jpeg',
+    avatar: 'https://d121vty759npai.cloudfront.net/images/648715e6e5df45a7b284d52e487b01f4.jpeg',
     rank: index + 1,
   }));
 
   // 返回成功的响应
-  return NextResponse.json(ResponseWrapper.success(userData));
+  return NextResponse.json(
+    ResponseWrapper.success({
+      level: 2,
+      users: userData,
+    }),
+  );
 }

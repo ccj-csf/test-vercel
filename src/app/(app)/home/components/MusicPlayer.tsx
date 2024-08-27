@@ -1,14 +1,17 @@
 'use client';
 
 import { Icon } from '@/components';
-import { useMusicPlayerStore } from '@/store';
-import { startVibrate } from '@/utils';
+import { postMusicEarnData } from '@/services';
+import { useAnimationStore, useMusicPlayerStore, useUserInfoStore } from '@/store';
+import { TimeUtils, startVibrate } from '@/utils';
 import Image from 'next/image';
 import React, { useCallback } from 'react';
 import AlbumArt from './AlbumArt';
 import AudioProgressBar from './AudioProgressBar';
 
 const MusicPlayer: React.FC = () => {
+  const { totalPoints, setUserInfo } = useUserInfoStore();
+  const { triggerNotification } = useAnimationStore();
   const { playlist, currentTrackIndex, currentTime, duration, updateCurrentTime, nextTrack } =
     useMusicPlayerStore();
   const currentTrack = playlist[currentTrackIndex];
@@ -26,6 +29,27 @@ const MusicPlayer: React.FC = () => {
     nextTrack(true);
     onSongChange();
   };
+
+  const handleRewardClaim = async (rewardAmount: number, node: number) => {
+    try {
+      const params = {
+        musicId: currentTrack.id,
+        rewardTime: TimeUtils.getCurrentUnixTimestamp(),
+        reward: rewardAmount,
+      };
+
+      const response = await postMusicEarnData(params);
+      triggerNotification(true, rewardAmount);
+      const newTotalPoints = totalPoints + rewardAmount;
+      setUserInfo({
+        totalPoints: newTotalPoints,
+      });
+      console.log('🚀 ~ handleRewardClaim ~ params:', params);
+    } catch (error) {
+      console.error(`Error claiming reward for node ${node}:`, error);
+    }
+  };
+
   return (
     <div className="mt-6">
       <AlbumArt></AlbumArt>
@@ -50,7 +74,7 @@ const MusicPlayer: React.FC = () => {
       <AudioProgressBar
         duration={duration}
         currentTime={currentTime}
-        // onSongChange={onSongChange}
+        onRewardClaim={handleRewardClaim}
         onTimeUpdate={(time) => {
           console.log('New time:', time);
           handleSeek(time);

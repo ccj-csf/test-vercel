@@ -8,7 +8,7 @@ interface AnimationStoreState {
 }
 
 export const useAnimationStore = create<AnimationStoreState>((set, get) => ({
-  coinCount: 400,
+  coinCount: 800,
   showNotification: false,
   animationTimeout: null,
 

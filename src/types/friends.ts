@@ -2,7 +2,7 @@ export interface IFriend {
   name: string;
   avatar: string;
   level: number;
-  reward: number;
+  totalPoints: number;
 }
 
 export interface IBonus {

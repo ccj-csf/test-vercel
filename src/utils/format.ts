@@ -27,3 +27,22 @@ export const formatAddress = (address: string) => {
 export const formatPadZero = (number: number, decimal = 2) => {
   return String(number).padStart(decimal, '0');
 };
+
+export const formatNumberWithUnits = (number: number = 0) => {
+  if (number >= 1_000_000) {
+    const result = (number / 1_000_000).toFixed(2);
+    let withoutDecimal = result.replace(/0+$/, ''); // 去掉小数部分末尾的零
+    if (withoutDecimal.endsWith('.')) {
+      withoutDecimal = withoutDecimal.substring(0, withoutDecimal.length - 1);
+    }
+    return withoutDecimal + 'M';
+  } else if (number >= 1_000) {
+    const result = (number / 1_000).toFixed(2);
+    let withoutDecimal = result.replace(/0+$/, ''); // 去掉小数部分末尾的零
+    if (withoutDecimal.endsWith('.')) {
+      withoutDecimal = withoutDecimal.substring(0, withoutDecimal.length - 1);
+    }
+    return withoutDecimal + 'K';
+  }
+  return number.toString();
+};

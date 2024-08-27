@@ -22,7 +22,7 @@ const CoinNotification: React.FC = () => {
               }}
               exit={{ opacity: 0 }}
               transition={{
-                duration: Math.random() * 1.5 + 0.5, // 随机动画时长
+                duration: Math.random() * 0.5 + 0.5, // 随机动画时长
                 delay: index * 0.05, // 逐个延迟出现
               }}
               className="absolute bottom-0"

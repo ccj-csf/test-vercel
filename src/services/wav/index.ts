@@ -2,7 +2,10 @@ import {
   API_APP_ALIVE,
   API_APP_CONFIG,
   API_APP_MUSIC,
+  API_DAILY_SIGN,
   API_EARN,
+  API_EARN_MUSIC,
+  API_EARN_SIGN,
   API_FRIENDS,
   API_LOGIN,
   API_MINE,
@@ -12,20 +15,20 @@ import {
 } from '@/constants';
 import {
   IAppConfig,
-  IDailyReward,
   IEarnData,
   IEarnDataType,
   IFriendsData,
   ILevelNumber,
   IMineData,
   IMineDataType,
+  IMusicRewardRequestData,
   IResponseWrapper,
   ISong,
   ITask,
+  ITaskStatus,
   ITokenData,
   IUserInfo,
-  IUserLevel,
-  UpdatePayload,
+  IUserLevelResponse,
 } from '@/types';
 import { apiService } from '../request';
 
@@ -38,11 +41,20 @@ export const getEarnData = () => {
 
 export const updateEarnData = <T extends IEarnDataType>(params: {
   type: T;
-  data: UpdatePayload<T>;
-}): Promise<IResponseWrapper<IDailyReward | ITask[]>> => {
-  return apiService.post<IResponseWrapper<IDailyReward | ITask[]>>({
-    apiName: API_EARN,
+  id: string;
+  status: ITaskStatus;
+}) => {
+  return apiService.post<ITask>({
+    // apiName: API_EARN,
+    apiName: API_EARN_SIGN,
     params,
+  });
+};
+
+// 每日签到
+export const dailySign = () => {
+  return apiService.put<IResponseWrapper<{}>>({
+    apiName: API_DAILY_SIGN,
   });
 };
 
@@ -61,16 +73,13 @@ export const getFriendsData = () => {
 
 // 获取userLevel数据
 export const getUserLevelData = (params: { level: ILevelNumber }) => {
-  return apiService.get<IResponseWrapper<IUserLevel[]>>({
+  return apiService.get<IResponseWrapper<IUserLevelResponse>>({
     apiName: API_USER_LEVEL,
     params,
   });
 };
 
-export const login = (params: {
-  initRawData: string;
-  inviteCode: string;
-}): Promise<IResponseWrapper<ITokenData>> => {
+export const login = (params: { initRawData: string; inviteCode: string }) => {
   return apiService.post<IResponseWrapper<ITokenData>>({
     apiName: API_LOGIN,
     params,
@@ -110,5 +119,13 @@ export const getUserTotalPoints = () => {
     }>
   >({
     apiName: API_USER_POINTS,
+  });
+};
+// 上报听歌积分奖励
+
+export const postMusicEarnData = (params: IMusicRewardRequestData) => {
+  return apiService.post<IResponseWrapper<ITokenData>>({
+    apiName: API_EARN_MUSIC,
+    params,
   });
 };

@@ -31,7 +31,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ friends }) => {
                 </div>
               </div>
               <section className="flex items-center space-x-1">
-                <span className="text-15">{formatNumberWithCommas(friend.reward)}</span>
+                <span className="text-15">{formatNumberWithCommas(friend.totalPoints)}</span>
                 <CurrencyIconButton size={16} />
               </section>
             </div>

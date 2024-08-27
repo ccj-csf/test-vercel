@@ -9,6 +9,7 @@ interface AudioProgressBarProps {
   currentTime: number; // 当前播放时间（秒）
   onTimeUpdate?: (time: number) => void; // 更新时间的回调函数
   barColor?: string; // 进度条的颜色
+  onRewardClaim?: (rewardAmount: number, node: number) => void; // 奖励领取回调函数
 }
 
 const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
@@ -16,6 +17,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
   currentTime,
   onTimeUpdate,
   barColor = '#000',
+  onRewardClaim,
 }) => {
   const { isTrackCompleted } = useMusicPlayerStore();
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -60,16 +62,18 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
   // 处理奖励发放
   useEffect(() => {
     if (currentTime > 0 && currentTime >= rewardNodeOnePosition && !rewardsClaimed.node1) {
-      alert('You have claimed your 1 reward for today. Please come back tomorrow.');
+      // alert('You have claimed your 1 reward for today. Please come back tomorrow.');
       setUserInfo({ totalPoints: totalPoints + rewardOneAmount });
       setRewardsClaimed((prev) => ({ ...prev, node1: true }));
       store.set(rewardKeyNode1, true);
+      onRewardClaim?.(rewardOneAmount, 1);
     }
     if (currentTime > 0 && currentTime >= rewardNodeTwoPosition && !rewardsClaimed.node2) {
-      alert('You have claimed your 2 reward for today. Please come back tomorrow.');
+      // alert('You have claimed your 2 reward for today. Please come back tomorrow.');
       setUserInfo({ totalPoints: totalPoints + rewardTwoAmount });
       setRewardsClaimed((prev) => ({ ...prev, node2: true }));
       store.set(rewardKeyNode2, true);
+      onRewardClaim?.(rewardTwoAmount, 2);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

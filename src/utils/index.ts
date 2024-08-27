@@ -7,4 +7,5 @@ export * from './i18n';
 export * from './message';
 export * from './regex';
 export * from './tg';
+export * from './TimeUtils';
 export * from './vibrate';

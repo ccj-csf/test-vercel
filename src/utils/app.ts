@@ -18,19 +18,34 @@ export class AppUtils {
     const isIos = platformInfo.os?.family === 'iOS';
     const isAndroid = platformInfo.os?.family === 'Android';
 
-    // 尝试打开应用
-    window.location.href = this.CUSTOM_URL_SCHEME;
+    // Telegram 环境中的特殊处理
+    if (window.Telegram && window.Telegram.WebApp) {
+      // 尝试通过 Telegram WebApp 特定 API 进行跳转或打开应用
+      // window.Telegram.WebApp.openLink(this.CUSTOM_URL_SCHEME);
+      setTimeout(() => {
+        if (isIos) {
+          window.Telegram.WebApp.openLink(this.IOS_APP_URL);
+        } else if (isAndroid) {
+          window.Telegram.WebApp.openLink(this.ANDROID_APP_URL);
+        } else {
+          alert('The application is not installed on your device.');
+          window.Telegram.WebApp.openLink(this.FALLBACK_URL);
+        }
+      }, 1000);
+    } else {
+      // 浏览器中的标准处理逻辑
+      window.location.href = this.CUSTOM_URL_SCHEME;
 
-    // 如果应用未安装，延迟一秒后跳转到应用商店
-    setTimeout(() => {
-      if (isIos) {
-        window.location.href = this.IOS_APP_URL;
-      } else if (isAndroid) {
-        window.location.href = this.ANDROID_APP_URL;
-      } else {
-        window.location.href = this.FALLBACK_URL;
-      }
-    }, 1000);
+      setTimeout(() => {
+        if (isIos) {
+          window.location.href = this.IOS_APP_URL;
+        } else if (isAndroid) {
+          window.location.href = this.ANDROID_APP_URL;
+        } else {
+          window.location.href = this.FALLBACK_URL;
+        }
+      }, 1000);
+    }
   }
 
   /**
@@ -38,6 +53,7 @@ export class AppUtils {
    * @param url 外部链接的URL。
    */
   static openExternalLink(url: string) {
-    window.open(url, '_blank');
+    // window.open(url, '_blank');
+    window.Telegram?.WebApp.openLink(url);
   }
 }

@@ -4,12 +4,15 @@ import UserItem from './UserItem';
 
 interface IProps {
   data: IUserLevel[];
-  loading: boolean; // 添加loading属性
+  loading: boolean;
+  isUserCurrentLevel: boolean;
 }
 
-const Leaderboard: React.FC<IProps> = ({ data, loading }) => {
+const Leaderboard: React.FC<IProps> = ({ data, loading, isUserCurrentLevel }) => {
   return (
-    <div className="mb-[40px] mt-6 space-y-8 rounded-t-[24px] bg-[#1e1f22] px-5 py-6">
+    <div
+      className={`${isUserCurrentLevel ? 'mb-[40px]' : ''} mt-6 space-y-8 rounded-t-[24px] bg-[#1e1f22] px-5 py-6`}
+    >
       {loading ? (
         // 显示骨架屏
         <div className="space-y-4">

@@ -9,7 +9,7 @@ interface ILevelConditionsProps {
     points: number;
     invites: number;
   };
-  isCurrentLevel: boolean; // 添加一个属性来判断用户是否在当前等级
+  isCurrentLevel: boolean;
 }
 
 const LevelConditions: React.FC<ILevelConditionsProps> = ({ level, isCurrentLevel }) => {
@@ -36,12 +36,12 @@ const LevelConditions: React.FC<ILevelConditionsProps> = ({ level, isCurrentLeve
           <span className="text-white">{formatNumberToK(level.points)}</span>
         </div>
         <div className="text-15 text-[#89898c]">
-          Invite Friends: <span className="text-green">{invites}</span>/{level.invites}
+          Invite Friends: <span className="ml-1 text-green">{invites}</span>/{level.invites}
         </div>
       </div>
     );
   } else {
-    // 如果用户不在当前等级，显示右侧样式
+    // 如果用户不在当前等级
     return (
       <div className=" mt-2 flex flex-col items-center text-15">
         <span className=" text-green">from {formatNumberToK(level.points)}</span>

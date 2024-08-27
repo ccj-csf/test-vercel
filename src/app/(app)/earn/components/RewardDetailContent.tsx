@@ -3,7 +3,7 @@
 import { CurrencyIconButton } from '@/biz-components';
 import { Button } from '@/components';
 import { IDailySignData } from '@/types';
-import { formatNumberToK } from '@/utils';
+import { formatNumberWithUnits } from '@/utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import Image from 'next/image';
@@ -88,7 +88,7 @@ const RewardDetailContent: React.FC<RewardDetailContentProps> = ({
                 <CurrencyIconButton size={20} />
               )}
               <p className={`font-medium ${isCurrent ? 'text-black' : 'text-[#898992]'}`}>
-                {formatNumberToK(sign.points)}
+                {formatNumberWithUnits(sign.points)}
               </p>
               {isFuture && (
                 <div className="absolute inset-0 rounded-8 bg-white opacity-50"></div> // 添加禁用蒙层

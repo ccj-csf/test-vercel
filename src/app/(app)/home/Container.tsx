@@ -43,12 +43,10 @@ const Container: React.FC = () => {
     setUserInfo({
       totalPoints: newTotalPoints,
     });
-
-    // 更新显示的 totalPoints
+    triggerNotification(true); // 触发通知
     setDisplayedTotalPoints(newTotalPoints);
 
     setIsPopupVisible(false); // 关闭弹窗
-    triggerNotification(true); // 触发通知
   };
 
   return (
@@ -57,7 +55,12 @@ const Container: React.FC = () => {
       <RewardButtons />
       <CoinBalance displayedTotalPoints={displayedTotalPoints} /> {/* 传递当前显示的 totalPoints */}
       <MusicPlayer />
-      <Popup visible={isPopupVisible} showCloseButton={true} onClose={handlePopupClose}>
+      <Popup
+        visible={isPopupVisible}
+        showCloseButton={true}
+        onClose={handlePopupClose}
+        closeOnMaskClick={false}
+      >
         <div className="flex flex-col items-center pt-4">
           <h2 className="absolute top-[10px] text-17">Offline Earnings</h2>
           <div className="mt-6 flex items-center space-x-2 text-28">

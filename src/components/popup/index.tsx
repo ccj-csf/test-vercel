@@ -14,7 +14,7 @@ const Popup: FC<PopupProps> = memo((props) => {
     props,
     <AntdPopup
       bodyClassName={`min-h-[100px] rounded-tl-16 rounded-tr-16 pt-3 px-5 pb-8 ${bodyClassName}`}
-      onMaskClick={onClose}
+      // onMaskClick={onClose}
       onClose={onClose}
       destroyOnClose
       position="bottom"

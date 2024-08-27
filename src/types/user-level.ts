@@ -8,9 +8,13 @@ export interface ILevel {
 }
 
 export interface IUserLevel {
-  username: string;
-  points: number;
+  name: string;
+  totalPoints: number;
   isCurrentUser: boolean;
-  avatarUrl: string;
+  avatar: string;
   rank: number;
+}
+export interface IUserLevelResponse {
+  level: ILevel;
+  users: IUserLevel[];
 }
