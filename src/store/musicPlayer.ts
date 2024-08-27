@@ -16,6 +16,7 @@ interface MusicPlayerState {
   duration: number;
   userInitiated: boolean;
   isTrackCompleted: boolean; // 新增状态
+  isReadyToPlay: boolean; // 新增状态
   getCurrentTrack: () => ISong | undefined;
   setPlaylist: (tracks: ISong[]) => void;
   playTrack: (index: number) => void;
@@ -37,21 +38,47 @@ export const useMusicPlayerStore = create(
       currentTrackId: null,
       isPlaying: false,
       player: null,
-      playMode: 'loop',
+      playMode: 'shuffle',
       currentTime: 0,
       duration: 0,
       animationFrameId: undefined,
       userInitiated: false,
-      isTrackCompleted: false, // 初始化为 false
+      isTrackCompleted: false,
+      isReadyToPlay: false, // 初始化为 false
       getCurrentTrack: () => {
         const { playlist, currentTrackIndex } = get();
         return playlist[currentTrackIndex];
       },
-      setPlaylist: (tracks) => set({ playlist: tracks }),
+      setPlaylist: (tracks) => {
+        set({ playlist: tracks });
+
+        if (tracks.length > 0) {
+          const firstTrack = tracks[0];
+          const player = new Howl({
+            src: [firstTrack.sourceUrl],
+            html5: true,
+            autoplay: false,
+            preload: true,
+            onload: () => {
+              set({
+                duration: player.duration(),
+                currentTime: 0,
+                currentTrackId: firstTrack.id,
+                player,
+                isReadyToPlay: true, // 歌曲加载完毕，设置为 true
+              });
+            },
+          });
+          player.load(); // 预加载第一首歌
+        }
+      },
       playTrack: (index) => {
         const { playlist, player: existingPlayer, currentTrackId } = get();
         const track = playlist[index];
         let player = existingPlayer;
+
+        // 切换歌曲时重置状态
+        set({ isReadyToPlay: false, isPlaying: false });
 
         if (player instanceof Howl) {
           if (player && currentTrackId !== track.id) {
@@ -60,6 +87,7 @@ export const useMusicPlayerStore = create(
               src: [track.sourceUrl],
               html5: true,
               autoplay: false,
+              preload: true,
               onplay: () => {
                 set({ isPlaying: true, isTrackCompleted: false });
                 startProgressUpdate(player);
@@ -69,7 +97,7 @@ export const useMusicPlayerStore = create(
                 stopProgressUpdate();
               },
               onload: () => {
-                set({ duration: player?.duration() });
+                set({ duration: player?.duration(), isReadyToPlay: true }); // 歌曲加载完毕，设置为 true
               },
               onend: () => {
                 if (get().playMode === 'repeat') {
@@ -89,6 +117,7 @@ export const useMusicPlayerStore = create(
             src: [track.sourceUrl],
             html5: true,
             autoplay: false,
+            preload: true,
             onplay: () => {
               set({ isPlaying: true, isTrackCompleted: false });
               startProgressUpdate(player);
@@ -98,7 +127,7 @@ export const useMusicPlayerStore = create(
               stopProgressUpdate();
             },
             onload: () => {
-              set({ duration: player?.duration() });
+              set({ duration: player?.duration(), isReadyToPlay: true }); // 歌曲加载完毕，设置为 true
             },
             onend: () => {
               get().nextTrack();
@@ -112,12 +141,12 @@ export const useMusicPlayerStore = create(
           player,
           currentTrackIndex: index,
           currentTrackId: track.id,
-          isPlaying: true,
           currentTime: 0,
           userInitiated: false,
           duration: player.duration(),
         });
 
+        player.load(); // 确保歌曲被加载
         player.play();
       },
 
@@ -135,7 +164,6 @@ export const useMusicPlayerStore = create(
           }
         }
       },
-
       nextTrack: (userInitiated = false) => {
         const { currentTrackIndex, playlist, playMode, playTrack } = get();
         let nextIndex = currentTrackIndex;
@@ -148,6 +176,9 @@ export const useMusicPlayerStore = create(
               ? Math.floor(Math.random() * playlist.length)
               : (currentTrackIndex + 1) % playlist.length;
         }
+
+        // 切换到下一首歌曲时，设置 isReadyToPlay 为 false
+        set({ isReadyToPlay: false });
 
         playTrack(nextIndex);
         set({ userInitiated });
@@ -193,6 +224,7 @@ export const useMusicPlayerStore = create(
                 duration: player.duration(),
                 currentTime: player.seek() as number,
                 isPlaying: false,
+                isReadyToPlay: true, // 歌曲加载完毕，设置为 true
               });
             },
             onend: () => {

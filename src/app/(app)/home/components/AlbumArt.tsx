@@ -2,11 +2,20 @@
 
 import { Icon } from '@/components';
 import { useMusicPlayerStore } from '@/store';
+import { DotLoading } from 'antd-mobile';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useRef } from 'react';
 
 const AlbumArt: React.FC = () => {
-  const { playlist, currentTrackIndex, togglePlayback, isPlaying } = useMusicPlayerStore();
+  const {
+    playlist,
+    currentTrackIndex,
+    togglePlayback,
+    isPlaying,
+    player,
+    playTrack,
+    isReadyToPlay, // 引入 isReadyToPlay 状态
+  } = useMusicPlayerStore();
   const currentTrack = playlist[currentTrackIndex];
 
   const rotationRef = useRef<number>(0); // 保存当前的旋转角度
@@ -42,13 +51,31 @@ const AlbumArt: React.FC = () => {
     };
   }, [isPlaying, rotate]);
 
+  const handleTogglePlayback = () => {
+    // 如果播放器为空或还未准备好，先初始化播放器并播放当前曲目
+    if (!player || !isReadyToPlay) {
+      playTrack(currentTrackIndex); // 初始化播放器并播放当前曲目
+    } else {
+      togglePlayback(); // 切换播放/暂停状态
+    }
+  };
+
   return (
     <div className="relative flex h-full items-center justify-center">
-      <Icon
-        onClick={togglePlayback}
-        name={isPlaying ? 'pause' : 'play'}
-        className="absolute z-10 !text-[40px] text-white"
-      />
+      {/* 根据 isReadyToPlay 控制播放按钮 */}
+      {isReadyToPlay ? (
+        <Icon
+          onClick={handleTogglePlayback}
+          name={isPlaying ? 'pause' : 'play'}
+          className="absolute z-10 !text-[40px] text-white"
+        />
+      ) : (
+        <div className="absolute z-10">
+          <div style={{ color: '#fff' }}>
+            <DotLoading color="currentColor" />
+          </div>
+        </div>
+      )}
       <div
         className="flex h-[220px] w-[220px] items-center justify-center rounded-full"
         style={{

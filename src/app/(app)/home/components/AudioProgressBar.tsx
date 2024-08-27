@@ -19,7 +19,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
   barColor = '#000',
   onRewardClaim,
 }) => {
-  const { isTrackCompleted } = useMusicPlayerStore();
+  const { isTrackCompleted, isReadyToPlay } = useMusicPlayerStore();
   const progressBarRef = useRef<HTMLDivElement>(null);
   const { setUserInfo, totalPoints } = useUserInfoStore();
 
@@ -62,20 +62,17 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
   // 处理奖励发放
   useEffect(() => {
     if (currentTime > 0 && currentTime >= rewardNodeOnePosition && !rewardsClaimed.node1) {
-      // alert('You have claimed your 1 reward for today. Please come back tomorrow.');
       setUserInfo({ totalPoints: totalPoints + rewardOneAmount });
       setRewardsClaimed((prev) => ({ ...prev, node1: true }));
       store.set(rewardKeyNode1, true);
       onRewardClaim?.(rewardOneAmount, 1);
     }
     if (currentTime > 0 && currentTime >= rewardNodeTwoPosition && !rewardsClaimed.node2) {
-      // alert('You have claimed your 2 reward for today. Please come back tomorrow.');
       setUserInfo({ totalPoints: totalPoints + rewardTwoAmount });
       setRewardsClaimed((prev) => ({ ...prev, node2: true }));
       store.set(rewardKeyNode2, true);
       onRewardClaim?.(rewardTwoAmount, 2);
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
@@ -97,15 +94,16 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
         ref={progressBarRef}
       >
         <div
-          className="absolute left-0 top-0 h-full rounded-[22px]"
+          className={`absolute left-0 top-0 h-full rounded-[22px] transition-all duration-200 ${
+            isReadyToPlay ? 'bg-black' : 'bg-gray-400'
+          }`}
           style={{
-            width: `${(currentTime / duration) * 100}%`,
-            backgroundColor: barColor,
+            width: isReadyToPlay ? `${(currentTime / duration) * 100}%` : '0%',
           }}
         ></div>
 
         {/* 奖励节点1 */}
-        {shouldDisplayNodes && (
+        {isReadyToPlay && shouldDisplayNodes && (
           <div
             className="absolute text-12"
             style={{
@@ -125,7 +123,7 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
         )}
 
         {/* 奖励节点2 */}
-        {shouldDisplayNodes && (
+        {isReadyToPlay && shouldDisplayNodes && (
           <div
             className="absolute text-12"
             style={{
@@ -147,16 +145,18 @@ const AudioProgressBar: React.FC<AudioProgressBarProps> = ({
 
       <section className="mt-[6px] flex w-full items-center justify-between text-12 text-[#898992]">
         <span>
-          {Math.floor(currentTime / 60)}:
-          {Math.floor(currentTime % 60)
-            .toString()
-            .padStart(2, '0')}
+          {isReadyToPlay
+            ? `${Math.floor(currentTime / 60)}:${Math.floor(currentTime % 60)
+                .toString()
+                .padStart(2, '0')}`
+            : '--:--'}
         </span>
         <span>
-          {Math.floor(duration / 60)}:
-          {Math.floor(duration % 60)
-            .toString()
-            .padStart(2, '0')}
+          {isReadyToPlay
+            ? `${Math.floor(duration / 60)}:${Math.floor(duration % 60)
+                .toString()
+                .padStart(2, '0')}`
+            : '--:--'}
         </span>
       </section>
     </div>
